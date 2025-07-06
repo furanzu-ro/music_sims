@@ -49,13 +49,48 @@ class GameProvider extends ChangeNotifier {
     }
   }
 
-  void startNewGame() {
+  void startNewGame([DateTime? chosenDate]) {
     _gameState = GameState(
       isGameStarted: true,
-      gameStartTime: DateTime.now(),
+      gameStartTime: chosenDate ?? DateTime.now(),
     );
     _saveGameState();
     notifyListeners();
+  }
+
+  Future<void> nextWeek() async {
+    _isLoading = true;
+    notifyListeners();
+    
+    try {
+      // Simulate loading delay
+      await Future.delayed(const Duration(seconds: 2));
+
+      // Create a log summary of the week
+      String logEntry = "Week completed on ${DateTime.now().toLocal().toString().split(' ')[0]} - "
+          "Health: ${_gameState.health}, Happiness: ${_gameState.happiness}, Money: \$${_gameState.money}";
+      
+      // Append the log to existing weekly logs
+      List<String> updatedLogs = List.from(_gameState.weeklyLogs)..add(logEntry);
+      
+      // Reset the week: start a new week (preserve money, and new start time may be kept as before)
+      _gameState = GameState(
+        isGameStarted: true,
+        gameStartTime: _gameState.gameStartTime,
+        money: _gameState.money,
+        weeklyLogs: updatedLogs,
+      );
+      
+      // Optionally, you may add a last action result message indicating the week reset.
+      _lastActionResult = "Next week started!";
+      await _saveGameState();
+    } catch (e) {
+      print('Error during next week transition: $e');
+      _lastActionResult = "Error transitioning to next week.";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   void performAction(GameAction action) {
@@ -72,12 +107,17 @@ class GameProvider extends ChangeNotifier {
     final happinessChange = action.happinessChange + random.nextInt(5) - 2;
     final moneyChange = action.moneyChange + random.nextInt(10) - 5;
 
+    // Add action to weekly logs
+    String actionLog = "Day ${_gameState.currentDay}: ${action.name}";
+    List<String> updatedLogs = List.from(_gameState.weeklyLogs)..add(actionLog);
+
     _gameState = _gameState.copyWith(
       health: (_gameState.health + healthChange).clamp(0, 100),
       energy: (_gameState.energy + energyChange - action.energyCost).clamp(0, 100),
       happiness: (_gameState.happiness + happinessChange).clamp(0, 100),
       money: (_gameState.money + moneyChange).clamp(0, 9999),
       completedActions: [..._gameState.completedActions, action.id],
+      weeklyLogs: updatedLogs,
     );
 
     _lastActionResult = _generateActionResult(action, healthChange, energyChange, happinessChange, moneyChange);

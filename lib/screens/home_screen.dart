@@ -88,10 +88,33 @@ class HomeScreen extends StatelessWidget {
                                       child: const Text('Cancel'),
                                     ),
                                     TextButton(
-                                      onPressed: () {
-                                        gameProvider.startNewGame();
+                                      onPressed: () async {
                                         Navigator.pop(context);
-                                        Navigator.pushNamed(context, '/game');
+                                        // Show date picker dialog
+                                        DateTime? chosenDate = await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime(2000),
+                                          lastDate: DateTime(2100),
+                                          helpText: 'Select Game Start Date',
+                                          builder: (context, child) {
+                                            return Theme(
+                                              data: Theme.of(context).copyWith(
+                                                colorScheme: const ColorScheme.dark(
+                                                  primary: accentColor,
+                                                  onPrimary: Colors.white,
+                                                  surface: cardColor,
+                                                  onSurface: Colors.white,
+                                                ),
+                                              ),
+                                              child: child!,
+                                            );
+                                          },
+                                        );
+                                        if (chosenDate != null) {
+                                          gameProvider.startNewGame(chosenDate);
+                                          Navigator.pushNamed(context, '/game');
+                                        }
                                       },
                                       child: const Text('Start New Game'),
                                     ),
@@ -106,9 +129,33 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ] else ...[
                           ElevatedButton(
-                            onPressed: () {
-                              gameProvider.startNewGame();
-                              Navigator.pushNamed(context, '/game');
+                            onPressed: () async {
+                              // Show date picker dialog
+                              DateTime? chosenDate = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2100),
+                                helpText: 'Select Game Start Date',
+                                builder: (context, child) {
+                                  return Theme(
+                                    data: Theme.of(context).copyWith(
+                                      colorScheme: const ColorScheme.dark(
+                                        primary: accentColor,
+                                        onPrimary: Colors.white,
+                                        surface: cardColor,
+                                        onSurface: Colors.white,
+                                      ),
+                                    ),
+                                    child: child!,
+                                  );
+                                },
+                              );
+                              if (chosenDate != null) {
+                                // Start new game with the chosen date
+                                gameProvider.startNewGame(chosenDate);
+                                Navigator.pushNamed(context, '/game');
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: accentColor,

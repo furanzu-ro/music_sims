@@ -8,6 +8,7 @@ class GameState {
   final List<String> completedActions;
   final bool isGameStarted;
   final DateTime? gameStartTime;
+  final List<String> weeklyLogs;
 
   GameState({
     this.currentDay = 1,
@@ -19,6 +20,7 @@ class GameState {
     this.completedActions = const [],
     this.isGameStarted = false,
     this.gameStartTime,
+    this.weeklyLogs = const [],
   });
 
   GameState copyWith({
@@ -31,6 +33,7 @@ class GameState {
     List<String>? completedActions,
     bool? isGameStarted,
     DateTime? gameStartTime,
+    List<String>? weeklyLogs,
   }) {
     return GameState(
       currentDay: currentDay ?? this.currentDay,
@@ -42,6 +45,7 @@ class GameState {
       completedActions: completedActions ?? List.from(this.completedActions),
       isGameStarted: isGameStarted ?? this.isGameStarted,
       gameStartTime: gameStartTime ?? this.gameStartTime,
+      weeklyLogs: weeklyLogs ?? List.from(this.weeklyLogs),
     );
   }
 
@@ -56,6 +60,7 @@ class GameState {
       'completedActions': completedActions,
       'isGameStarted': isGameStarted,
       'gameStartTime': gameStartTime?.toIso8601String(),
+      'weeklyLogs': weeklyLogs,
     };
   }
 
@@ -72,6 +77,9 @@ class GameState {
       gameStartTime: json['gameStartTime'] != null 
           ? DateTime.parse(json['gameStartTime']) 
           : null,
+      weeklyLogs: json['weeklyLogs'] != null 
+          ? List<String>.from(json['weeklyLogs']) 
+          : [],
     );
   }
 }

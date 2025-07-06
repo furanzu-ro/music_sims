@@ -23,84 +23,186 @@ class GameScreen extends StatelessWidget {
         builder: (context, gameProvider, child) {
           final gameState = gameProvider.gameState;
           
-          return Column(
+          return Stack(
             children: [
-              // Stats Header
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(
-                  color: cardColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Column(
+                children: [
+                  // Stats Header
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      color: cardColor,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                    ),
+                    child: Column(
                       children: [
-                        _buildStatItem('Day', '${gameState.currentDay}/7', Icons.calendar_today),
-                        _buildStatItem('Health', '${gameState.health}%', Icons.favorite, 
-                          color: gameState.health > 50 ? accentColor : dangerColor),
-                        _buildStatItem('Energy', '${gameState.energy}%', Icons.battery_charging_full,
-                          color: gameState.energy > 30 ? accentColor : warningColor),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildStatItem('Day', '${gameState.currentDay}/7', Icons.calendar_today),
+                            _buildStatItem('Health', '${gameState.health}%', Icons.favorite, 
+                              color: gameState.health > 50 ? accentColor : dangerColor),
+                            _buildStatItem('Energy', '${gameState.energy}%', Icons.battery_charging_full,
+                              color: gameState.energy > 30 ? accentColor : warningColor),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildStatItem('Happiness', '${gameState.happiness}%', Icons.mood),
+                            _buildStatItem('Money', '\$${gameState.money}', Icons.attach_money),
+                            _buildStatItem('Week', 'Week ${((gameState.weeklyLogs.length ~/ 7) + 1)}', Icons.calendar_view_week),
+                          ],
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buildStatItem('Happiness', '${gameState.happiness}%', Icons.mood),
-                        _buildStatItem('Money', '\$${gameState.money}', Icons.attach_money),
-                        _buildStatItem('Actions', '${gameState.completedActions.length}/3', Icons.check_circle),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              
-              // Action Result
-              if (gameProvider.lastActionResult != null)
-                Container(
-                  margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    // ignore: deprecated_member_use
-                    color: accentColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: accentColor),
                   ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.info_outline, color: accentColor),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          gameProvider.lastActionResult!,
-                          style: const TextStyle(color: accentColor),
+                  
+                  // Action Result
+                  if (gameProvider.lastActionResult != null)
+                    Container(
+                      margin: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        // ignore: deprecated_member_use
+                        color: accentColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: accentColor),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.info_outline, color: accentColor),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              gameProvider.lastActionResult!,
+                              style: const TextStyle(color: accentColor),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: gameProvider.clearLastActionResult,
+                            color: accentColor,
+                          ),
+                        ],
+                      ),
+                    ),
+                  
+                  // Actions List
+                  Expanded(
+                    flex: 2,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: gameProvider.getAvailableActions().length,
+                      itemBuilder: (context, index) {
+                        final action = gameProvider.getAvailableActions()[index];
+                        return _buildActionCard(context, action, gameProvider);
+                      },
+                    ),
+                  ),
+
+                  // Next Week Button
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton(
+                      onPressed: gameProvider.isLoading 
+                        ? null 
+                        : () => gameProvider.nextWeek(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: accentColor,
+                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: gameProvider.clearLastActionResult,
-                        color: accentColor,
+                      child: const Text(
+                        'Next Week',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
-                    ],
+                    ),
+                  ),
+
+                  // Weekly Log Section
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Weekly Log',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Expanded(
+                            child: gameState.weeklyLogs.isEmpty 
+                            ? const Center(
+                                child: Text(
+                                  'No logs yet. Start performing actions!',
+                                  style: TextStyle(color: Colors.white70),
+                                ),
+                              )
+                            : ListView.builder(
+                                itemCount: gameState.weeklyLogs.length,
+                                itemBuilder: (context, index) {
+                                  final logEntry = gameState.weeklyLogs[index];
+                                  return Card(
+                                    color: cardColor,
+                                    margin: const EdgeInsets.only(bottom: 8),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: ListTile(
+                                      leading: const Icon(Icons.history, color: accentColor),
+                                      title: Text(
+                                        logEntry,
+                                        style: const TextStyle(color: Colors.white, fontSize: 12),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // Loading Overlay
+              if (gameProvider.isLoading)
+                Container(
+                  color: Colors.black.withOpacity(0.7),
+                  child: const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          color: accentColor,
+                          strokeWidth: 4,
+                        ),
+                        SizedBox(height: 20),
+                        Text(
+                          'Advancing to next week...',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              
-              // Actions List
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: gameProvider.getAvailableActions().length,
-                  itemBuilder: (context, index) {
-                    final action = gameProvider.getAvailableActions()[index];
-                    return _buildActionCard(context, action, gameProvider);
-                  },
-                ),
-              ),
             ],
           );
         },

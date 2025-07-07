@@ -13,6 +13,8 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
+  bool _showWeeklyLog = false;
+
   final _formKey = GlobalKey<FormState>();
   late AnimationController _musicNoteController;
   late Animation<double> _musicNoteAnimation;
@@ -471,14 +473,14 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                     children: [
                                       const Icon(Icons.attach_money, color: Colors.white, size: 18),
                                       const SizedBox(width: 4),
-                                      Text(
-                                        '\${gameState.money}',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
+                            Text(
+                              '\$${gameState.money}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
                                     ],
                                   ),
                                 ],
@@ -551,103 +553,102 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
               ),
               
               // Weekly Log at bottom
-              Positioned(
-                left: 16,
-                right: 16,
-                bottom: 16,
-                child: Container(
-                  height: 160,
-                  decoration: BoxDecoration(
-                    color: cardColor.withOpacity(0.95),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 10,
-                        offset: const Offset(0, -2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _showWeeklyLog = !_showWeeklyLog;
-                              });
-                            },
-                            child: Row(
-                              children: const [
-                                Icon(Icons.history, color: accentColor),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Weekly Log',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+              if (_showWeeklyLog)
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  bottom: 16,
+                  child: Container(
+                    height: 160,
+                    decoration: BoxDecoration(
+                      color: cardColor.withOpacity(0.95),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 10,
+                          offset: const Offset(0, -2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _showWeeklyLog = !_showWeeklyLog;
+                                });
+                              },
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.history, color: accentColor),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Weekly Log',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Spacer(),
-                          ElevatedButton(
-                            onPressed: gameProvider.isLoading ? null : () => gameProvider.nextWeek(),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: accentColor,
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                ],
                               ),
                             ),
-                            child: const Text(
-                              'Next Week',
-                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                            const Spacer(),
+                            ElevatedButton(
+                              onPressed: gameProvider.isLoading ? null : () => gameProvider.nextWeek(),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: accentColor,
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: const Text(
+                                'Next Week',
+                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      ),
-                          Expanded(
-                            child: _showWeeklyLog
-                                ? (gameState.weeklyLogs.isEmpty
-                                    ? const Center(
-                                        child: Text(
-                                          'No activities yet. Start performing actions!',
-                                          style: TextStyle(color: Colors.white70),
-                                        ),
-                                      )
-                                    : ListView.builder(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                                        itemCount: gameState.weeklyLogs.length,
-                                        itemBuilder: (context, index) {
-                                          final logEntry = gameState.weeklyLogs[index];
-                                          return Container(
-                                            margin: const EdgeInsets.only(bottom: 8),
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                              color: primaryColor.withOpacity(0.2),
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: Text(
-                                              logEntry,
-                                              style: const TextStyle(color: Colors.white, fontSize: 12),
-                                            ),
-                                          );
-                                        },
-                                      ))
-                                : const SizedBox.shrink(),
-                          ),
-                    ],
+                          ],
+                        ),
+                        ),
+                            Expanded(
+                              child: gameState.weeklyLogs.isEmpty
+                                  ? const Center(
+                                      child: Text(
+                                        'No activities yet. Start performing actions!',
+                                        style: TextStyle(color: Colors.white70),
+                                      ),
+                                    )
+                                  : ListView.builder(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                                      itemCount: gameState.weeklyLogs.length,
+                                      itemBuilder: (context, index) {
+                                        final logEntry = gameState.weeklyLogs[index];
+                                        return Container(
+                                          margin: const EdgeInsets.only(bottom: 8),
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: primaryColor.withOpacity(0.2),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: Text(
+                                            logEntry,
+                                            style: const TextStyle(color: Colors.white, fontSize: 12),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                            ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
               
             ],
           );

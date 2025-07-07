@@ -77,6 +77,11 @@ class GameProvider extends ChangeNotifier {
     );
     notifyListeners();
     _saveGameState();
+
+    // Automatically start the game after profile is set
+    if (isProfileComplete && !_gameState.isGameStarted) {
+      startNewGame();
+    }
   }
 
   void startNewGame([DateTime? chosenDate]) {

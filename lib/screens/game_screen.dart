@@ -451,26 +451,42 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                             ),
                             const SizedBox(width: 16),
                             Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    gameState.artistName,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  gameState.artistName,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
                                   ),
-                                  Text(
-                                    '\$${gameState.money} • Week ${_getWeekNumber(gameState)} (${gameState.gameStartTime != null ? _formatDate(gameState.gameStartTime!) : "No Date"})',
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.7),
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Money display moved to right
+                          Row(
+                            children: [
+                              const Icon(Icons.attach_money, color: Colors.white, size: 18),
+                              const SizedBox(width: 4),
+                              Text(
+                                '\${gameState.money}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
+                            ],
+                          ),
+                          Text(
+                            'Week ${_getWeekNumber(gameState)} (${gameState.gameStartTime != null ? _formatDate(gameState.gameStartTime!) : "No Date"})',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
+                              fontSize: 14,
+                            ),
+                          ),
                             ),
                           ],
                         ),
@@ -492,33 +508,34 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                   ),
                   
                   // Action Result
-                  if (gameProvider.lastActionResult != null)
-                    Container(
-                      margin: const EdgeInsets.all(16),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: accentColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: accentColor),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.info_outline, color: accentColor),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              gameProvider.lastActionResult!,
-                              style: const TextStyle(color: accentColor),
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: gameProvider.clearLastActionResult,
-                            color: accentColor,
-                          ),
-                        ],
-                      ),
-                    ),
+                        // Removed popup for lastActionResult
+                        // if (gameProvider.lastActionResult != null)
+                        //   Container(
+                        //     margin: const EdgeInsets.all(16),
+                        //     padding: const EdgeInsets.all(12),
+                        //     decoration: BoxDecoration(
+                        //       color: accentColor.withOpacity(0.1),
+                        //       borderRadius: BorderRadius.circular(12),
+                        //       border: Border.all(color: accentColor),
+                        //     ),
+                        //     child: Row(
+                        //       children: [
+                        //         const Icon(Icons.info_outline, color: accentColor),
+                        //         const SizedBox(width: 8),
+                        //         Expanded(
+                        //           child: Text(
+                        //             gameProvider.lastActionResult!,
+                        //             style: const TextStyle(color: accentColor),
+                        //           ),
+                        //         ),
+                        //         IconButton(
+                        //           icon: const Icon(Icons.close),
+                        //           onPressed: gameProvider.clearLastActionResult,
+                        //           color: accentColor,
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
                   
                   // Actions Grid - 4 per row, smaller cards, no descriptions
                   Expanded(
@@ -582,115 +599,128 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                       Padding(
                         padding: const EdgeInsets.all(16),
                         child: Row(
-                          children: [
-                            const Icon(Icons.history, color: accentColor),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Weekly Log',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _showWeeklyLog = !_showWeeklyLog;
+                              });
+                            },
+                            child: Row(
+                              children: const [
+                                Icon(Icons.history, color: accentColor),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Weekly Log',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Spacer(),
+                          ElevatedButton(
+                            onPressed: gameProvider.isLoading ? null : () => gameProvider.nextWeek(),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: accentColor,
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            const Spacer(),
-                            ElevatedButton(
-                              onPressed: gameProvider.isLoading ? null : () => gameProvider.nextWeek(),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: accentColor,
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: const Text(
-                                'Next Week',
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-                              ),
+                            child: const Text(
+                              'Next Week',
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      Expanded(
-                        child: gameState.weeklyLogs.isEmpty
-                            ? const Center(
-                                child: Text(
-                                  'No activities yet. Start performing actions!',
-                                  style: TextStyle(color: Colors.white70),
-                                ),
-                              )
-                            : ListView.builder(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                itemCount: gameState.weeklyLogs.length,
-                                itemBuilder: (context, index) {
-                                  final logEntry = gameState.weeklyLogs[index];
-                                  return Container(
-                                    margin: const EdgeInsets.only(bottom: 8),
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: primaryColor.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      logEntry,
-                                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                                    ),
-                                  );
-                                },
-                              ),
                       ),
+                          Expanded(
+                            child: _showWeeklyLog
+                                ? (gameState.weeklyLogs.isEmpty
+                                    ? const Center(
+                                        child: Text(
+                                          'No activities yet. Start performing actions!',
+                                          style: TextStyle(color: Colors.white70),
+                                        ),
+                                      )
+                                    : ListView.builder(
+                                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                                        itemCount: gameState.weeklyLogs.length,
+                                        itemBuilder: (context, index) {
+                                          final logEntry = gameState.weeklyLogs[index];
+                                          return Container(
+                                            margin: const EdgeInsets.only(bottom: 8),
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                              color: primaryColor.withOpacity(0.2),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              logEntry,
+                                              style: const TextStyle(color: Colors.white, fontSize: 12),
+                                            ),
+                                          );
+                                        },
+                                      ))
+                                : const SizedBox.shrink(),
+                          ),
                     ],
                   ),
                 ),
               ),
               
-              // Cool Loading Overlay with Music Note Animation
-              if (gameProvider.isLoading)
-                Container(
-                  color: Colors.black.withOpacity(0.7),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AnimatedBuilder(
-                          animation: _musicNoteAnimation,
-                          builder: (context, child) {
-                            return Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: LinearGradient(
-                                  colors: [
-                                    accentColor.withOpacity(0.3),
-                                    accentColor,
-                                  ],
-                                  stops: [0.0, _musicNoteAnimation.value],
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.music_note,
-                                color: Colors.white,
-                                size: 40,
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          'Advancing to next week...',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              // Removed loading overlay for next week
+              // if (gameProvider.isLoading)
+              //   Container(
+              //     color: Colors.black.withOpacity(0.7),
+              //     child: Center(
+              //       child: Column(
+              //         mainAxisAlignment: MainAxisAlignment.center,
+              //         children: [
+              //           AnimatedBuilder(
+              //             animation: _musicNoteAnimation,
+              //             builder: (context, child) {
+              //               return Container(
+              //                 width: 80,
+              //                 height: 80,
+              //                 decoration: BoxDecoration(
+              //                   shape: BoxShape.circle,
+              //                   gradient: LinearGradient(
+              //                     colors: [
+              //                       accentColor.withOpacity(0.3),
+              //                       accentColor,
+              //                     ],
+              //                     stops: [0.0, _musicNoteAnimation.value],
+              //                     begin: Alignment.bottomCenter,
+              //                     end: Alignment.topCenter,
+              //                   ),
+              //                 ),
+              //                 child: const Icon(
+              //                   Icons.music_note,
+              //                   color: Colors.white,
+              //                   size: 40,
+              //                 ),
+              //               );
+              //             },
+              //           ),
+              //           const SizedBox(height: 20),
+              //           const Text(
+              //             'Advancing to next week...',
+              //             style: TextStyle(
+              //               color: Colors.white,
+              //               fontSize: 18,
+              //               fontWeight: FontWeight.bold,
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
             ],
           );
         },

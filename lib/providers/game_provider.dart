@@ -96,19 +96,30 @@ class GameProvider extends ChangeNotifier {
   Future<void> nextWeek() async {
     _isLoading = true;
     notifyListeners();
-    
+
     try {
       // Simulate loading delay
       await Future.delayed(const Duration(seconds: 2));
 
       // Complete the current week and reset
       _completeWeek();
-      
-      _lastActionResult = "Next week started!";
+
+      // Update the game start time by adding 7 days
+      if (_gameState.gameStartTime != null) {
+        _gameState = _gameState.copyWith(
+          gameStartTime: _gameState.gameStartTime!.add(const Duration(days: 7)),
+        );
+      } else {
+        _gameState = _gameState.copyWith(
+          gameStartTime: DateTime.now(),
+        );
+      }
+
+      _lastActionResult = null; // Remove popup message
       await _saveGameState();
     } catch (e) {
       print('Error during next week transition: $e');
-      _lastActionResult = "Error transitioning to next week.";
+      _lastActionResult = null; // Remove popup message on error
     } finally {
       _isLoading = false;
       notifyListeners();

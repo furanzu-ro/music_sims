@@ -41,10 +41,11 @@ class MyApp extends StatelessWidget {
           ),
           useMaterial3: true,
         ),
-        home: const SplashScreen(),
         debugShowCheckedModeBanner: false,
+        initialRoute: '/splash',
         routes: {
-          '/': (context) => const HomeScreen(),
+          '/splash': (context) => const SplashScreen(),
+          '/home': (context) => const HomeScreen(),
           '/main_navigation': (context) => const MainNavigation(),
           '/game': (context) => const GameScreen(),
           '/profile': (context) => const ProfileScreen(),

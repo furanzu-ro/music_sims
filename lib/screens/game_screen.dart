@@ -27,171 +27,254 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Next Week Simulator'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.home),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
-      ),
       body: Consumer<GameProvider>(
         builder: (context, gameProvider, child) {
           final gameState = gameProvider.gameState;
 
           if (!gameProvider.isProfileComplete) {
-            // Show profile form
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: ListView(
-                  children: [
-                    const Text(
-                      'Create Your Profile',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Artist Name',
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                      validator: (value) => value == null || value.isEmpty ? 'Please enter artist name' : null,
-                      onSaved: (value) => _artistName = value ?? '',
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Real Name',
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                      validator: (value) => value == null || value.isEmpty ? 'Please enter real name' : null,
-                      onSaved: (value) => _realName = value ?? '',
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Age',
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return 'Please enter age';
-                        final age = int.tryParse(value);
-                        if (age == null || age <= 0) return 'Please enter a valid age';
-                        return null;
-                      },
-                      onSaved: (value) => _age = int.tryParse(value ?? '0') ?? 0,
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Profile Picture URL',
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                      onSaved: (value) => _profilePicture = value ?? '',
-                    ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(
-                        labelText: 'Gender',
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                      value: _gender,
-                      items: const [
-                        DropdownMenuItem(value: 'Male', child: Text('Male')),
-                        DropdownMenuItem(value: 'Female', child: Text('Female')),
-                      ],
-                      onChanged: (value) => setState(() => _gender = value ?? 'Male'),
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Description',
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                      maxLines: 3,
-                      onSaved: (value) => _description = value ?? '',
-                    ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(
-                        labelText: 'Genre',
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                      value: _genre,
-                      items: const [
-                        DropdownMenuItem(value: 'Classical', child: Text('Classical')),
-                        DropdownMenuItem(value: 'Pop', child: Text('Pop')),
-                        DropdownMenuItem(value: 'Rock', child: Text('Rock')),
-                        DropdownMenuItem(value: 'Hip-hop', child: Text('Hip-hop')),
-                        DropdownMenuItem(value: 'Electronic', child: Text('Electronic')),
-                        DropdownMenuItem(value: 'Jazz', child: Text('Jazz')),
-                        DropdownMenuItem(value: 'Blues', child: Text('Blues')),
-                        DropdownMenuItem(value: 'Country', child: Text('Country')),
-                        DropdownMenuItem(value: 'Folk', child: Text('Folk')),
-                      ],
-                      onChanged: (value) => setState(() => _genre = value ?? 'Classical'),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          _formKey.currentState?.save();
-                          gameProvider.setProfile(
-                            artistName: _artistName,
-                            realName: _realName,
-                            age: _age,
-                            profilePicture: _profilePicture,
-                            gender: _gender,
-                            description: _description,
-                            genre: _genre,
-                          );
-                          gameProvider.startNewGame();
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: accentColor,
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+            // Show profile creation form
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                // Background image
+                Image.network(
+                  'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [primaryColor, bgColor],
                         ),
                       ),
-                      child: const Text(
-                        'Start Game',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    );
+                  },
+                ),
+                // Gradient overlay
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        bgColor.withOpacity(0.9),
+                        primaryColor.withOpacity(0.7),
+                      ],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    ),
+                  ),
+                ),
+                SafeArea(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(24),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          // Header
+                          Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: cardColor.withOpacity(0.9),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                const Icon(
+                                  Icons.person_add,
+                                  size: 60,
+                                  color: accentColor,
+                                ),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  'Create Your Artist Profile',
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontFamily: 'Pacifico',
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Tell us about your musical journey',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white.withOpacity(0.8),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          
+                          // Form fields
+                          _buildFormField(
+                            label: 'Artist Name',
+                            icon: Icons.music_note,
+                            validator: (value) => value == null || value.isEmpty ? 'Please enter artist name' : null,
+                            onSaved: (value) => _artistName = value ?? '',
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          _buildFormField(
+                            label: 'Real Name',
+                            icon: Icons.person,
+                            validator: (value) => value == null || value.isEmpty ? 'Please enter real name' : null,
+                            onSaved: (value) => _realName = value ?? '',
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          _buildFormField(
+                            label: 'Age',
+                            icon: Icons.cake,
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) return 'Please enter age';
+                              final age = int.tryParse(value);
+                              if (age == null || age <= 0) return 'Please enter a valid age';
+                              return null;
+                            },
+                            onSaved: (value) => _age = int.tryParse(value ?? '0') ?? 0,
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          _buildFormField(
+                            label: 'Profile Picture URL (Optional)',
+                            icon: Icons.image,
+                            onSaved: (value) => _profilePicture = value ?? '',
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          _buildDropdownField(
+                            label: 'Gender',
+                            icon: Icons.person_outline,
+                            value: _gender,
+                            items: const ['Male', 'Female', 'Other'],
+                            onChanged: (value) => setState(() => _gender = value ?? 'Male'),
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          _buildFormField(
+                            label: 'Description',
+                            icon: Icons.description,
+                            maxLines: 3,
+                            onSaved: (value) => _description = value ?? '',
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          _buildDropdownField(
+                            label: 'Music Genre',
+                            icon: Icons.library_music,
+                            value: _genre,
+                            items: const ['Classical', 'Pop', 'Rock', 'Hip-hop', 'Electronic', 'Jazz', 'Blues', 'Country', 'Folk'],
+                            onChanged: (value) => setState(() => _genre = value ?? 'Classical'),
+                          ),
+                          const SizedBox(height: 32),
+                          
+                          // Create Artist Button
+                          Container(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                if (_formKey.currentState?.validate() ?? false) {
+                                  _formKey.currentState?.save();
+                                  
+                                  // Show loading dialog
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => const Center(
+                                      child: Card(
+                                        color: cardColor,
+                                        child: Padding(
+                                          padding: EdgeInsets.all(24),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              CircularProgressIndicator(color: accentColor),
+                                              SizedBox(height: 16),
+                                              Text(
+                                                'Creating your artist profile...',
+                                                style: TextStyle(color: Colors.white, fontSize: 16),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                  
+                                  // Simulate loading
+                                  await Future.delayed(const Duration(seconds: 2));
+                                  
+                                  gameProvider.setProfile(
+                                    artistName: _artistName,
+                                    realName: _realName,
+                                    age: _age,
+                                    profilePicture: _profilePicture,
+                                    gender: _gender,
+                                    description: _description,
+                                    genre: _genre,
+                                  );
+                                  gameProvider.startNewGame();
+                                  
+                                  Navigator.of(context).pop(); // Close loading dialog
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: accentColor,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                                elevation: 8,
+                                shadowColor: accentColor.withOpacity(0.4),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.star, size: 24),
+                                  SizedBox(width: 12),
+                                  Text(
+                                    'Create Artist',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             );
           }
 
+          // Game Home Screen (with bottom nav)
           return Stack(
             children: [
               Column(
                 children: [
-                  // Stats Header
+                  // Compact Stats Header
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                     decoration: const BoxDecoration(
                       color: cardColor,
                       borderRadius: BorderRadius.only(
@@ -201,65 +284,62 @@ class _GameScreenState extends State<GameScreen> {
                     ),
                     child: Column(
                       children: [
+                        // Profile section (smaller)
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildStatItem('Health', '${gameState.health}%', Icons.favorite, 
-                              color: gameState.health > 50 ? accentColor : dangerColor),
-                            _buildStatItem('Energy', '${gameState.energy}%', Icons.battery_charging_full,
-                              color: gameState.energy > 30 ? accentColor : warningColor),
-                            _buildStatItem('Happiness', '${gameState.happiness}%', Icons.mood),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        // Profile details row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            if (gameState.profilePicture.isNotEmpty)
-                              CircleAvatar(
-                                radius: 30,
-                                backgroundImage: NetworkImage(gameState.profilePicture),
-                              )
-                            else
-                              const CircleAvatar(
-                                radius: 30,
-                                child: Icon(Icons.person, size: 30),
+                            Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: accentColor, width: 2),
                               ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Artist: ${gameState.artistName}',
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                  'Real Name: ${gameState.realName}',
-                                  style: const TextStyle(color: Colors.white70),
-                                ),
-                                Text(
-                                  'Age: ${gameState.age}',
-                                  style: const TextStyle(color: Colors.white70),
-                                ),
-                                Text(
-                                  'Gender: ${gameState.gender}',
-                                  style: const TextStyle(color: Colors.white70),
-                                ),
-                                Text(
-                                  'Genre: ${gameState.genre}',
-                                  style: const TextStyle(color: Colors.white70),
-                                ),
-                              ],
+                              child: CircleAvatar(
+                                radius: 25,
+                                backgroundColor: primaryColor,
+                                backgroundImage: gameState.profilePicture.isNotEmpty
+                                    ? NetworkImage(gameState.profilePicture)
+                                    : null,
+                                child: gameState.profilePicture.isEmpty
+                                    ? const Icon(Icons.person, size: 25, color: Colors.white)
+                                    : null,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    gameState.artistName,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  Text(
+                                    '\$${gameState.money} • Week ${_getWeekNumber(gameState)}',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.7),
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 16),
+                        // Compact stats
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildStatItem('Money', '\$${gameState.money}', Icons.attach_money),
-                            _buildStatItem('Week', 'Week ${_getWeekNumber(gameState)}', Icons.calendar_view_week),
-                            _buildStatItem('Date', _formatDate(gameState.gameStartTime), Icons.date_range),
+                            _buildCompactStat('Health', gameState.health, Icons.favorite, 
+                              color: gameState.health > 50 ? accentColor : dangerColor),
+                            _buildCompactStat('Energy', gameState.energy, Icons.battery_charging_full,
+                              color: gameState.energy > 30 ? accentColor : warningColor),
+                            _buildCompactStat('Happiness', gameState.happiness, Icons.mood,
+                              color: accentColor),
                           ],
                         ),
                       ],
@@ -272,9 +352,8 @@ class _GameScreenState extends State<GameScreen> {
                       margin: const EdgeInsets.all(16),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        // ignore: deprecated_member_use
                         color: accentColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: accentColor),
                       ),
                       child: Row(
@@ -296,96 +375,111 @@ class _GameScreenState extends State<GameScreen> {
                       ),
                     ),
                   
-                  // Actions List and Weekly Log in a scrollable view
+                  // Actions List
                   Expanded(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 200), // Extra bottom padding for weekly log
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Actions List
+                          const Text(
+                            'Daily Actions',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
                           ...gameProvider.getAvailableActions().map((action) => 
                             Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: _buildActionCard(context, action, gameProvider),
                             ),
                           ),
-                          
-                          const SizedBox(height: 20),
                         ],
                       ),
                     ),
                   ),
                 ],
               ),
-              // Floating Next Week Button
+              
+              // Weekly Log at bottom
               Positioned(
-                bottom: 20,
-                right: 20,
-                child: ElevatedButton(
-                  onPressed: gameProvider.isLoading ? null : () => gameProvider.nextWeek(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: accentColor,
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'Next Week',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                ),
-              ),
-              // Weekly Log Section
-              Positioned(
-                left: 20,
-                bottom: 80,
-                right: 20,
+                left: 16,
+                right: 16,
+                bottom: 16,
                 child: Container(
-                  height: 150,
+                  height: 160,
                   decoration: BoxDecoration(
-                    color: cardColor,
-                    borderRadius: BorderRadius.circular(12),
+                    color: cardColor.withOpacity(0.95),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, -2),
+                      ),
+                    ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Weekly Log',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.history, color: accentColor),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Weekly Log',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const Spacer(),
+                            ElevatedButton(
+                              onPressed: gameProvider.isLoading ? null : () => gameProvider.nextWeek(),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: accentColor,
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: const Text(
+                                'Next Week',
+                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       Expanded(
                         child: gameState.weeklyLogs.isEmpty
                             ? const Center(
                                 child: Text(
-                                  'No logs yet. Start performing actions!',
+                                  'No activities yet. Start performing actions!',
                                   style: TextStyle(color: Colors.white70),
                                 ),
                               )
                             : ListView.builder(
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
                                 itemCount: gameState.weeklyLogs.length,
                                 itemBuilder: (context, index) {
                                   final logEntry = gameState.weeklyLogs[index];
-                                  return Card(
-                                    color: cardColor,
-                                    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                  return Container(
+                                    margin: const EdgeInsets.only(bottom: 8),
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: primaryColor.withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
-                                    child: ListTile(
-                                      leading: const Icon(Icons.history, color: accentColor),
-                                      title: Text(
-                                        logEntry,
-                                        style: const TextStyle(color: Colors.white, fontSize: 12),
-                                      ),
+                                    child: Text(
+                                      logEntry,
+                                      style: const TextStyle(color: Colors.white, fontSize: 12),
                                     ),
                                   );
                                 },
@@ -395,6 +489,7 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ),
               ),
+              
               // Loading Overlay
               if (gameProvider.isLoading)
                 Container(
@@ -427,15 +522,79 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildStatItem(String label, String value, IconData icon, {Color? color}) {
+  Widget _buildFormField({
+    required String label,
+    required IconData icon,
+    String? Function(String?)? validator,
+    void Function(String?)? onSaved,
+    TextInputType? keyboardType,
+    int maxLines = 1,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: primaryColor.withOpacity(0.3)),
+      ),
+      child: TextFormField(
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+          prefixIcon: Icon(icon, color: accentColor),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.all(16),
+        ),
+        style: const TextStyle(color: Colors.white),
+        keyboardType: keyboardType,
+        maxLines: maxLines,
+        validator: validator,
+        onSaved: onSaved,
+      ),
+    );
+  }
+
+  Widget _buildDropdownField({
+    required String label,
+    required IconData icon,
+    required String value,
+    required List<String> items,
+    required void Function(String?) onChanged,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: cardColor.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: primaryColor.withOpacity(0.3)),
+      ),
+      child: DropdownButtonFormField<String>(
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+          prefixIcon: Icon(icon, color: accentColor),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.all(16),
+        ),
+        value: value,
+        dropdownColor: cardColor,
+        style: const TextStyle(color: Colors.white),
+        items: items.map((item) => DropdownMenuItem(
+          value: item,
+          child: Text(item, style: const TextStyle(color: Colors.white)),
+        )).toList(),
+        onChanged: onChanged,
+      ),
+    );
+  }
+
+  Widget _buildCompactStat(String label, int value, IconData icon, {Color? color}) {
     return Column(
       children: [
-        Icon(icon, color: color ?? Colors.white70),
+        Icon(icon, color: color ?? Colors.white70, size: 20),
         const SizedBox(height: 4),
         Text(
-          value,
+          '$value%',
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
             color: color ?? Colors.white,
           ),
@@ -443,7 +602,7 @@ class _GameScreenState extends State<GameScreen> {
         Text(
           label,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 10,
             color: Colors.white70,
           ),
         ),
@@ -452,79 +611,68 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildActionCard(BuildContext context, GameAction action, GameProvider gameProvider) {
-    // Allow tap always, show dialog if energy insufficient
     final canPerform = gameProvider.gameState.energy >= action.energyCost;
     
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
       color: cardColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () => gameProvider.performAction(action, context: context),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Text(
-                    action.icon,
-                    style: const TextStyle(fontSize: 24),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          action.name,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: canPerform ? Colors.white : Colors.grey,
-                          ),
-                        ),
-                        Text(
-                          action.description,
-                          style: TextStyle(
-                            color: canPerform ? Colors.white70 : Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (action.energyCost > 0)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: canPerform ? primaryColor : Colors.grey,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '${action.energyCost} Energy',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.white,
-                        ),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: primaryColor.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  action.icon,
+                  style: const TextStyle(fontSize: 20),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      action.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: canPerform ? Colors.white : Colors.grey,
                       ),
                     ),
-                ],
+                    Text(
+                      action.description,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: canPerform ? Colors.white70 : Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: [
-                  if (action.healthChange != 0)
-                    _buildEffectChip('Health', action.healthChange, Icons.favorite),
-                  if (action.energyChange != 0)
-                    _buildEffectChip('Energy', action.energyChange, Icons.battery_charging_full),
-                  if (action.happinessChange != 0)
-                    _buildEffectChip('Happiness', action.happinessChange, Icons.mood),
-                  if (action.moneyChange != 0)
-                    _buildEffectChip('Money', action.moneyChange, Icons.attach_money),
-                ],
-              ),
+              if (action.energyCost > 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: canPerform ? accentColor : Colors.grey,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '${action.energyCost}⚡',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -532,43 +680,8 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildEffectChip(String label, int value, IconData icon) {
-    final isPositive = value > 0;
-    final color = isPositive ? accentColor : dangerColor;
-    
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        // ignore: deprecated_member_use
-        color: color.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: color),
-          const SizedBox(width: 4),
-          Text(
-            '${isPositive ? '+' : ''}$value',
-            style: TextStyle(
-              fontSize: 12,
-              color: color,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   int _getWeekNumber(GameState gameState) {
-    // Count completed weeks from weekly logs that contain "Week completed"
     int completedWeeks = gameState.weeklyLogs.where((String log) => log.contains('Week completed')).length;
     return completedWeeks + 1;
-  }
-
-  String _formatDate(DateTime? date) {
-    if (date == null) return 'No Date';
-    return '${date.month}/${date.day}/${date.year}';
   }
 }

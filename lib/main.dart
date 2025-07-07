@@ -2,14 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'screens/splash_screen.dart';
+import 'screens/splash_screen.dart' as splash;
 import 'screens/home_screen.dart';
-import 'screens/game_screen.dart';
+import 'screens/game_screen.dart' as game;
 import 'screens/profile_screen.dart';
 import 'screens/date_selection_screen.dart';
 import 'providers/game_provider.dart';
 import 'utils/constants.dart';
-import 'main_navigation.dart';
+import 'main_navigation.dart' as main_nav;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,10 +44,10 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: '/splash',
         routes: {
-          '/splash': (context) => const SplashScreen(),
+          '/splash': (context) => splash.SplashScreen(),
           '/home': (context) => const HomeScreen(),
-          '/main_navigation': (context) => const MainNavigation(),
-          '/game': (context) => const GameScreen(),
+          '/main_navigation': (context) => const main_nav.MainNavigation(),
+          '/game': (context) => const game.GameScreen(),
           '/profile': (context) => const ProfileScreen(),
           '/date_selection': (context) => const DateSelectionScreen(),
         },

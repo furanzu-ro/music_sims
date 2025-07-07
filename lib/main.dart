@@ -29,11 +29,11 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primaryColor: primaryColor,
           scaffoldBackgroundColor: bgColor,
-          fontFamily: 'PressStart2P', // Pixelated font from Google Fonts
+          fontFamily: 'Inter', // Keep Inter as main font
           appBarTheme: const AppBarTheme(
             backgroundColor: primaryColor,
             titleTextStyle: TextStyle(
-              fontFamily: 'PressStart2P',
+              fontFamily: 'PressStart2P', // Pixelated font only for app bar title
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.white,

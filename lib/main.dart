@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         routes: {
           '/game': (context) => const GameScreen(),
+          '/profile': (context) => const ProfileScreen(),
         },
       ),
     );

@@ -2,10 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'screens/home_screen.dart';
 import 'screens/game_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/date_selection_screen.dart';
 import 'providers/game_provider.dart';
 import 'utils/constants.dart';
+import 'main_navigation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,11 +32,11 @@ class MyApp extends StatelessWidget {
           ),
           useMaterial3: true,
         ),
-        home: const HomeScreen(),
+        home: const MainNavigation(),
         debugShowCheckedModeBanner: false,
         routes: {
           '/game': (context) => const GameScreen(),
-          '/profile': (context) => const ProfileScreen(),
+          '/date_selection': (context) => const DateSelectionScreen(),
         },
       ),
     );

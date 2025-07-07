@@ -49,8 +49,43 @@ class GameProvider extends ChangeNotifier {
     }
   }
 
+  bool get isProfileComplete {
+    return _gameState.artistName.isNotEmpty &&
+        _gameState.realName.isNotEmpty &&
+        _gameState.age > 0 &&
+        _gameState.gender.isNotEmpty &&
+        _gameState.genre.isNotEmpty;
+  }
+
+  void setProfile({
+    required String artistName,
+    required String realName,
+    required int age,
+    required String profilePicture,
+    required String gender,
+    required String description,
+    required String genre,
+  }) {
+    _gameState = _gameState.copyWith(
+      artistName: artistName,
+      realName: realName,
+      age: age,
+      profilePicture: profilePicture,
+      gender: gender,
+      description: description,
+      genre: genre,
+    );
+    notifyListeners();
+    _saveGameState();
+  }
+
   void startNewGame([DateTime? chosenDate]) {
-    _gameState = GameState(
+    if (!isProfileComplete) {
+      _lastActionResult = "Please complete your profile before starting the game.";
+      notifyListeners();
+      return;
+    }
+    _gameState = _gameState.copyWith(
       isGameStarted: true,
       gameStartTime: chosenDate ?? DateTime.now(),
     );
@@ -66,22 +101,9 @@ class GameProvider extends ChangeNotifier {
       // Simulate loading delay
       await Future.delayed(const Duration(seconds: 2));
 
-      // Create a log summary of the week
-      String logEntry = "Week completed on ${DateTime.now().toLocal().toString().split(' ')[0]} - "
-          "Health: ${_gameState.health}, Happiness: ${_gameState.happiness}, Money: \$${_gameState.money}";
+      // Complete the current week and reset
+      _completeWeek();
       
-      // Append the log to existing weekly logs
-      List<String> updatedLogs = List.from(_gameState.weeklyLogs)..add(logEntry);
-      
-      // Reset the week: start a new week (preserve money, and new start time may be kept as before)
-      _gameState = GameState(
-        isGameStarted: true,
-        gameStartTime: _gameState.gameStartTime,
-        money: _gameState.money,
-        weeklyLogs: updatedLogs,
-      );
-      
-      // Optionally, you may add a last action result message indicating the week reset.
       _lastActionResult = "Next week started!";
       await _saveGameState();
     } catch (e) {
@@ -93,10 +115,22 @@ class GameProvider extends ChangeNotifier {
     }
   }
 
-  void performAction(GameAction action) {
+  void performAction(GameAction action, {required BuildContext context}) {
     if (_gameState.energy < action.energyCost) {
-      _lastActionResult = "Not enough energy to perform this action!";
-      notifyListeners();
+      // Show dialog instead of blocking tap
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Energy not enough!'),
+          content: const Text('You do not have enough energy to perform this action.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
       return;
     }
 
@@ -107,8 +141,13 @@ class GameProvider extends ChangeNotifier {
     final happinessChange = action.happinessChange + random.nextInt(5) - 2;
     final moneyChange = action.moneyChange + random.nextInt(10) - 5;
 
-    // Add action to weekly logs
-    String actionLog = "Day ${_gameState.currentDay}: ${action.name}";
+    // Add action to weekly logs with descriptive text
+    String actionLog = "Day ${_gameState.currentDay}: ${action.name}, you gained "
+        "${healthChange > 0 ? '+$healthChange health' : '$healthChange health'}, "
+        "${energyChange > 0 ? '+$energyChange energy' : '$energyChange energy'}, "
+        "${happinessChange > 0 ? '+$happinessChange happiness' : '$happinessChange happiness'}, "
+        "${moneyChange > 0 ? '+\$$moneyChange' : '-\$${moneyChange.abs()}'}.";
+
     List<String> updatedLogs = List.from(_gameState.weeklyLogs)..add(actionLog);
 
     _gameState = _gameState.copyWith(
@@ -148,7 +187,13 @@ class GameProvider extends ChangeNotifier {
 
   void _advanceDay() {
     if (_gameState.currentDay >= 7) {
-      _completeWeek();
+      // Don't auto-advance to next week, just complete the current day
+      _gameState = _gameState.copyWith(
+        health: (_gameState.health - 5).clamp(0, 100),
+        energy: 100, // Reset energy for new day
+        completedActions: [], // Reset daily actions
+      );
+      _lastActionResult = "Day 7 completed! Use 'Next Week' button to advance.";
       return;
     }
 
@@ -160,17 +205,32 @@ class GameProvider extends ChangeNotifier {
       completedActions: [], // Reset daily actions
     );
 
-    _lastActionResult = "Day ${_gameState.currentDay - 1} completed! New day begins.";
+    // Remove the "Day X completed! New day begins." message by clearing _lastActionResult
+    _lastActionResult = null;
   }
 
   void _completeWeek() {
+    // This method is now only called by nextWeek() button
+    String logEntry = "Week ${(_gameState.weeklyLogs.where((log) => log.contains('Week')).length + 1)} completed on ${DateTime.now().toLocal().toString().split(' ')[0]} - "
+        "Health: ${_gameState.health}, Happiness: ${_gameState.happiness}, Money: \$${_gameState.money}";
+    
+    List<String> updatedLogs = List.from(_gameState.weeklyLogs)..add(logEntry);
+    
     _lastActionResult = "Week completed! Final stats - Health: ${_gameState.health}, Happiness: ${_gameState.happiness}, Money: \$${_gameState.money}";
     
     // Reset for new week
     _gameState = GameState(
       isGameStarted: true,
-      gameStartTime: DateTime.now(),
+      gameStartTime: _gameState.gameStartTime, // Keep original start date
       money: _gameState.money, // Keep money between weeks
+      weeklyLogs: updatedLogs,
+      artistName: _gameState.artistName,
+      realName: _gameState.realName,
+      age: _gameState.age,
+      profilePicture: _gameState.profilePicture,
+      gender: _gameState.gender,
+      description: _gameState.description,
+      genre: _gameState.genre,
     );
   }
 
@@ -182,10 +242,7 @@ class GameProvider extends ChangeNotifier {
   }
 
   List<GameAction> getAvailableActions() {
-    return GameActions.actions.where((action) {
-      // Filter out actions that cost too much energy
-      return _gameState.energy >= action.energyCost;
-    }).toList();
+    return GameActions.actions;
   }
 
   void clearLastActionResult() {

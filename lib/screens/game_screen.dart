@@ -2,10 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/game_provider.dart';
 import '../models/game_action.dart';
+import '../models/game_state.dart';
 import '../utils/constants.dart';
 
-class GameScreen extends StatelessWidget {
+class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
+
+  @override
+  State<GameScreen> createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<GameScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  // Form fields
+  String _artistName = '';
+  String _realName = '';
+  int _age = 0;
+  String _profilePicture = '';
+  String _gender = 'Male';
+  String _description = '';
+  String _genre = 'Classical';
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +39,152 @@ class GameScreen extends StatelessWidget {
       body: Consumer<GameProvider>(
         builder: (context, gameProvider, child) {
           final gameState = gameProvider.gameState;
-          
+
+          if (!gameProvider.isProfileComplete) {
+            // Show profile form
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  children: [
+                    const Text(
+                      'Create Your Profile',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Artist Name',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      validator: (value) => value == null || value.isEmpty ? 'Please enter artist name' : null,
+                      onSaved: (value) => _artistName = value ?? '',
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Real Name',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      validator: (value) => value == null || value.isEmpty ? 'Please enter real name' : null,
+                      onSaved: (value) => _realName = value ?? '',
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Age',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return 'Please enter age';
+                        final age = int.tryParse(value);
+                        if (age == null || age <= 0) return 'Please enter a valid age';
+                        return null;
+                      },
+                      onSaved: (value) => _age = int.tryParse(value ?? '0') ?? 0,
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Profile Picture URL',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      onSaved: (value) => _profilePicture = value ?? '',
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(
+                        labelText: 'Gender',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      value: _gender,
+                      items: const [
+                        DropdownMenuItem(value: 'Male', child: Text('Male')),
+                        DropdownMenuItem(value: 'Female', child: Text('Female')),
+                      ],
+                      onChanged: (value) => setState(() => _gender = value ?? 'Male'),
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      maxLines: 3,
+                      onSaved: (value) => _description = value ?? '',
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(
+                        labelText: 'Genre',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      value: _genre,
+                      items: const [
+                        DropdownMenuItem(value: 'Classical', child: Text('Classical')),
+                        DropdownMenuItem(value: 'Pop', child: Text('Pop')),
+                        DropdownMenuItem(value: 'Rock', child: Text('Rock')),
+                        DropdownMenuItem(value: 'Hip-hop', child: Text('Hip-hop')),
+                        DropdownMenuItem(value: 'Electronic', child: Text('Electronic')),
+                        DropdownMenuItem(value: 'Jazz', child: Text('Jazz')),
+                        DropdownMenuItem(value: 'Blues', child: Text('Blues')),
+                        DropdownMenuItem(value: 'Country', child: Text('Country')),
+                        DropdownMenuItem(value: 'Folk', child: Text('Folk')),
+                      ],
+                      onChanged: (value) => setState(() => _genre = value ?? 'Classical'),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          _formKey.currentState?.save();
+                          gameProvider.setProfile(
+                            artistName: _artistName,
+                            realName: _realName,
+                            age: _age,
+                            profilePicture: _profilePicture,
+                            gender: _gender,
+                            description: _description,
+                            genre: _genre,
+                          );
+                          gameProvider.startNewGame();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: accentColor,
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Start Game',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
           return Stack(
             children: [
               Column(
@@ -42,20 +204,62 @@ class GameScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildStatItem('Day', '${gameState.currentDay}/7', Icons.calendar_today),
                             _buildStatItem('Health', '${gameState.health}%', Icons.favorite, 
                               color: gameState.health > 50 ? accentColor : dangerColor),
                             _buildStatItem('Energy', '${gameState.energy}%', Icons.battery_charging_full,
                               color: gameState.energy > 30 ? accentColor : warningColor),
+                            _buildStatItem('Happiness', '${gameState.happiness}%', Icons.mood),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        // Profile details row
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            if (gameState.profilePicture.isNotEmpty)
+                              CircleAvatar(
+                                radius: 30,
+                                backgroundImage: NetworkImage(gameState.profilePicture),
+                              )
+                            else
+                              const CircleAvatar(
+                                radius: 30,
+                                child: Icon(Icons.person, size: 30),
+                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Artist: ${gameState.artistName}',
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  'Real Name: ${gameState.realName}',
+                                  style: const TextStyle(color: Colors.white70),
+                                ),
+                                Text(
+                                  'Age: ${gameState.age}',
+                                  style: const TextStyle(color: Colors.white70),
+                                ),
+                                Text(
+                                  'Gender: ${gameState.gender}',
+                                  style: const TextStyle(color: Colors.white70),
+                                ),
+                                Text(
+                                  'Genre: ${gameState.genre}',
+                                  style: const TextStyle(color: Colors.white70),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                         const SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildStatItem('Happiness', '${gameState.happiness}%', Icons.mood),
                             _buildStatItem('Money', '\$${gameState.money}', Icons.attach_money),
-                            _buildStatItem('Week', 'Week ${((gameState.weeklyLogs.length ~/ 7) + 1)}', Icons.calendar_view_week),
+                            _buildStatItem('Week', 'Week ${_getWeekNumber(gameState)}', Icons.calendar_view_week),
+                            _buildStatItem('Date', _formatDate(gameState.gameStartTime), Icons.date_range),
                           ],
                         ),
                       ],
@@ -92,59 +296,74 @@ class GameScreen extends StatelessWidget {
                       ),
                     ),
                   
-                  // Actions List
+                  // Actions List and Weekly Log in a scrollable view
                   Expanded(
-                    flex: 2,
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: gameProvider.getAvailableActions().length,
-                      itemBuilder: (context, index) {
-                        final action = gameProvider.getAvailableActions()[index];
-                        return _buildActionCard(context, action, gameProvider);
-                      },
-                    ),
-                  ),
-
-                  // Next Week Button
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: ElevatedButton(
-                      onPressed: gameProvider.isLoading 
-                        ? null 
-                        : () => gameProvider.nextWeek(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: accentColor,
-                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Next Week',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
-                    ),
-                  ),
-
-                  // Weekly Log Section
-                  Expanded(
-                    flex: 1,
-                    child: Container(
+                    child: SingleChildScrollView(
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Weekly Log',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                          // Actions List
+                          ...gameProvider.getAvailableActions().map((action) => 
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _buildActionCard(context, action, gameProvider),
                             ),
                           ),
-                          const SizedBox(height: 10),
-                          Expanded(
-                            child: gameState.weeklyLogs.isEmpty 
+                          
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // Floating Next Week Button
+              Positioned(
+                bottom: 20,
+                right: 20,
+                child: ElevatedButton(
+                  onPressed: gameProvider.isLoading ? null : () => gameProvider.nextWeek(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: accentColor,
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Next Week',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ),
+              ),
+              // Weekly Log Section
+              Positioned(
+                left: 20,
+                bottom: 80,
+                right: 20,
+                child: Container(
+                  height: 150,
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'Weekly Log',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: gameState.weeklyLogs.isEmpty
                             ? const Center(
                                 child: Text(
                                   'No logs yet. Start performing actions!',
@@ -157,7 +376,7 @@ class GameScreen extends StatelessWidget {
                                   final logEntry = gameState.weeklyLogs[index];
                                   return Card(
                                     color: cardColor,
-                                    margin: const EdgeInsets.only(bottom: 8),
+                                    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -171,12 +390,10 @@ class GameScreen extends StatelessWidget {
                                   );
                                 },
                               ),
-                          ),
-                        ],
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
               // Loading Overlay
               if (gameProvider.isLoading)
@@ -235,13 +452,14 @@ class GameScreen extends StatelessWidget {
   }
 
   Widget _buildActionCard(BuildContext context, GameAction action, GameProvider gameProvider) {
+    // Allow tap always, show dialog if energy insufficient
     final canPerform = gameProvider.gameState.energy >= action.energyCost;
     
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       color: cardColor,
       child: InkWell(
-        onTap: canPerform ? () => gameProvider.performAction(action) : null,
+        onTap: () => gameProvider.performAction(action, context: context),
         borderRadius: BorderRadius.circular(8),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -341,5 +559,16 @@ class GameScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  int _getWeekNumber(GameState gameState) {
+    // Count completed weeks from weekly logs that contain "Week completed"
+    int completedWeeks = gameState.weeklyLogs.where((String log) => log.contains('Week completed')).length;
+    return completedWeeks + 1;
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return 'No Date';
+    return '${date.month}/${date.day}/${date.year}';
   }
 }

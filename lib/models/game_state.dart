@@ -10,6 +10,15 @@ class GameState {
   final DateTime? gameStartTime;
   final List<String> weeklyLogs;
 
+  // New profile fields
+  final String artistName;
+  final String realName;
+  final int age;
+  final String profilePicture;
+  final String gender;
+  final String description;
+  final String genre;
+
   GameState({
     this.currentDay = 1,
     this.health = 100,
@@ -21,6 +30,13 @@ class GameState {
     this.isGameStarted = false,
     this.gameStartTime,
     this.weeklyLogs = const [],
+    this.artistName = '',
+    this.realName = '',
+    this.age = 0,
+    this.profilePicture = '',
+    this.gender = '',
+    this.description = '',
+    this.genre = '',
   });
 
   GameState copyWith({
@@ -34,6 +50,13 @@ class GameState {
     bool? isGameStarted,
     DateTime? gameStartTime,
     List<String>? weeklyLogs,
+    String? artistName,
+    String? realName,
+    int? age,
+    String? profilePicture,
+    String? gender,
+    String? description,
+    String? genre,
   }) {
     return GameState(
       currentDay: currentDay ?? this.currentDay,
@@ -46,6 +69,13 @@ class GameState {
       isGameStarted: isGameStarted ?? this.isGameStarted,
       gameStartTime: gameStartTime ?? this.gameStartTime,
       weeklyLogs: weeklyLogs ?? List.from(this.weeklyLogs),
+      artistName: artistName ?? this.artistName,
+      realName: realName ?? this.realName,
+      age: age ?? this.age,
+      profilePicture: profilePicture ?? this.profilePicture,
+      gender: gender ?? this.gender,
+      description: description ?? this.description,
+      genre: genre ?? this.genre,
     );
   }
 
@@ -61,6 +91,13 @@ class GameState {
       'isGameStarted': isGameStarted,
       'gameStartTime': gameStartTime?.toIso8601String(),
       'weeklyLogs': weeklyLogs,
+      'artistName': artistName,
+      'realName': realName,
+      'age': age,
+      'profilePicture': profilePicture,
+      'gender': gender,
+      'description': description,
+      'genre': genre,
     };
   }
 
@@ -80,6 +117,13 @@ class GameState {
       weeklyLogs: json['weeklyLogs'] != null 
           ? List<String>.from(json['weeklyLogs']) 
           : [],
+      artistName: json['artistName'] ?? '',
+      realName: json['realName'] ?? '',
+      age: json['age'] ?? 0,
+      profilePicture: json['profilePicture'] ?? '',
+      gender: json['gender'] ?? '',
+      description: json['description'] ?? '',
+      genre: json['genre'] ?? '',
     );
   }
 }

@@ -75,87 +75,19 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          TextButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('New Game'),
-                                  content: const Text('Are you sure you want to start a new game? This will reset your progress.'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        Navigator.pop(context);
-                                        // Show date picker dialog
-                                        DateTime? chosenDate = await showDatePicker(
-                                          context: context,
-                                          initialDate: DateTime.now(),
-                                          firstDate: DateTime(2000),
-                                          lastDate: DateTime(2100),
-                                          helpText: 'Select Game Start Date',
-                                          builder: (context, child) {
-                                            return Theme(
-                                              data: Theme.of(context).copyWith(
-                                                colorScheme: const ColorScheme.dark(
-                                                  primary: accentColor,
-                                                  onPrimary: Colors.white,
-                                                  surface: cardColor,
-                                                  onSurface: Colors.white,
-                                                ),
-                                              ),
-                                              child: child!,
-                                            );
-                                          },
-                                        );
-                                        if (chosenDate != null) {
-                                          gameProvider.startNewGame(chosenDate);
-                                          Navigator.pushNamed(context, '/game');
-                                        }
-                                      },
-                                      child: const Text('Start New Game'),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                            child: const Text(
-                              'Start New Game',
-                              style: TextStyle(color: Colors.white70),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/profile');
+                              },
+                              child: const Text(
+                                'Start New Game',
+                                style: TextStyle(color: Colors.white70),
+                              ),
                             ),
-                          ),
                         ] else ...[
                           ElevatedButton(
-                            onPressed: () async {
-                              // Show date picker dialog
-                              DateTime? chosenDate = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2100),
-                                helpText: 'Select Game Start Date',
-                                builder: (context, child) {
-                                  return Theme(
-                                    data: Theme.of(context).copyWith(
-                                      colorScheme: const ColorScheme.dark(
-                                        primary: accentColor,
-                                        onPrimary: Colors.white,
-                                        surface: cardColor,
-                                        onSurface: Colors.white,
-                                      ),
-                                    ),
-                                    child: child!,
-                                  );
-                                },
-                              );
-                              if (chosenDate != null) {
-                                // Start new game with the chosen date
-                                gameProvider.startNewGame(chosenDate);
-                                Navigator.pushNamed(context, '/game');
-                              }
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/profile');
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: accentColor,

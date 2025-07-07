@@ -24,7 +24,7 @@ class GameState {
     this.health = 100,
     this.energy = 100,
     this.happiness = 75,
-    this.money = 500,
+    this.money = 0,
     this.stats = const {},
     this.completedActions = const [],
     this.isGameStarted = false,

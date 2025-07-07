@@ -12,10 +12,8 @@ class GameScreen extends StatefulWidget {
   State<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
+class _GameScreenState extends State<GameScreen> {
   final _formKey = GlobalKey<FormState>();
-  late AnimationController _musicNoteController;
-  late Animation<double> _musicNoteAnimation;
 
   // Form fields
   String _artistName = '';
@@ -26,28 +24,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   String _description = '';
   String _genre = 'Classical';
   DateTime _startingDate = DateTime.now();
-
-  @override
-  void initState() {
-    super.initState();
-    _musicNoteController = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    )..repeat();
-    _musicNoteAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _musicNoteController,
-      curve: Curves.easeInOut,
-    ));
-  }
-
-  @override
-  void dispose() {
-    _musicNoteController.dispose();
-    super.dispose();
-  }
 
   Future<void> _pickStartingDate() async {
     final DateTime? picked = await showDatePicker(
@@ -88,37 +64,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       "July", "August", "September", "October", "November", "December"
     ];
     return monthNames[month];
-  }
-
-  String _getActionIcon(String actionId) {
-    switch (actionId) {
-      case 'exercise':
-        return '🏃‍♂️';
-      case 'sleep':
-        return '😴';
-      case 'eat_healthy':
-        return '🥗';
-      case 'doctor_visit':
-        return '👨‍⚕️';
-      case 'work':
-        return '💼';
-      case 'freelance':
-        return '💻';
-      case 'hang_out':
-        return '👥';
-      case 'date':
-        return '💕';
-      case 'watch_movie':
-        return '🎬';
-      case 'play_games':
-        return '🎮';
-      case 'meditation':
-        return '🧘‍♂️';
-      case 'spa_day':
-        return '🧖‍♀️';
-      default:
-        return '⭐';
-    }
   }
 
   @override
@@ -197,6 +142,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
+                                    fontFamily: 'Pacifico',
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
@@ -310,46 +256,21 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                 if (_formKey.currentState?.validate() ?? false) {
                                   _formKey.currentState?.save();
                                   
-                                  // Show cool loading dialog with music note animation
+                                  // Show loading dialog
                                   showDialog(
                                     context: context,
                                     barrierDismissible: false,
-                                    builder: (context) => Center(
+                                    builder: (context) => const Center(
                                       child: Card(
                                         color: cardColor,
                                         child: Padding(
-                                          padding: const EdgeInsets.all(24),
+                                          padding: EdgeInsets.all(24),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              AnimatedBuilder(
-                                                animation: _musicNoteAnimation,
-                                                builder: (context, child) {
-                                                  return Container(
-                                                    width: 60,
-                                                    height: 60,
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      gradient: LinearGradient(
-                                                        colors: [
-                                                          accentColor.withOpacity(0.3),
-                                                          accentColor,
-                                                        ],
-                                                        stops: [0.0, _musicNoteAnimation.value],
-                                                        begin: Alignment.bottomCenter,
-                                                        end: Alignment.topCenter,
-                                                      ),
-                                                    ),
-                                                    child: const Icon(
-                                                      Icons.music_note,
-                                                      color: Colors.white,
-                                                      size: 30,
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                              const SizedBox(height: 16),
-                                              const Text(
+                                              CircularProgressIndicator(color: accentColor),
+                                              SizedBox(height: 16),
+                                              Text(
                                                 'Creating your artist profile...',
                                                 style: TextStyle(color: Colors.white, fontSize: 16),
                                               ),
@@ -520,7 +441,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                       ),
                     ),
                   
-                  // Actions Grid - 4 per row, smaller cards, no descriptions
+                  // Actions Grid
                   Expanded(
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 200), // Extra bottom padding for weekly log
@@ -540,10 +461,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 4,
-                              crossAxisSpacing: 8,
-                              mainAxisSpacing: 8,
-                              childAspectRatio: 1.0,
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              childAspectRatio: 2.5,
                             ),
                             itemCount: gameProvider.getAvailableActions().length,
                             itemBuilder: (context, index) {
@@ -644,42 +565,20 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                 ),
               ),
               
-              // Cool Loading Overlay with Music Note Animation
+              // Loading Overlay
               if (gameProvider.isLoading)
                 Container(
                   color: Colors.black.withOpacity(0.7),
-                  child: Center(
+                  child: const Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        AnimatedBuilder(
-                          animation: _musicNoteAnimation,
-                          builder: (context, child) {
-                            return Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: LinearGradient(
-                                  colors: [
-                                    accentColor.withOpacity(0.3),
-                                    accentColor,
-                                  ],
-                                  stops: [0.0, _musicNoteAnimation.value],
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.music_note,
-                                color: Colors.white,
-                                size: 40,
-                              ),
-                            );
-                          },
+                        CircularProgressIndicator(
+                          color: accentColor,
+                          strokeWidth: 4,
                         ),
-                        const SizedBox(height: 20),
-                        const Text(
+                        SizedBox(height: 20),
+                        Text(
                           'Advancing to next week...',
                           style: TextStyle(
                             color: Colors.white,
@@ -796,47 +695,62 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         onTap: () => gameProvider.performAction(action, context: context),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(12),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Large emoji icon
-              Text(
-                _getActionIcon(action.id),
-                style: const TextStyle(fontSize: 24),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: primaryColor.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      action.icon,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      action.name,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: canPerform ? Colors.white : Colors.grey,
+                      ),
+                    ),
+                  ),
+                  if (action.energyCost > 0)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: canPerform ? accentColor : Colors.grey,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        '${action.energyCost}⚡',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                ],
               ),
               const SizedBox(height: 4),
-              // Action name (smaller text)
               Text(
-                action.name,
+                action.description,
                 style: TextStyle(
                   fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: canPerform ? Colors.white : Colors.grey,
+                  color: canPerform ? Colors.white70 : Colors.grey,
                 ),
-                textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              // Energy cost badge
-              if (action.energyCost > 0) ...[
-                const SizedBox(height: 2),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                  decoration: BoxDecoration(
-                    color: canPerform ? accentColor : Colors.grey,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    '${action.energyCost}⚡',
-                    style: const TextStyle(
-                      fontSize: 8,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
             ],
           ),
         ),

@@ -141,8 +141,8 @@ class GameProvider extends ChangeNotifier {
     final happinessChange = action.happinessChange + random.nextInt(5) - 2;
     final moneyChange = action.moneyChange + random.nextInt(10) - 5;
 
-    // Add action to weekly logs with descriptive text
-    String actionLog = "Day ${_gameState.currentDay}: ${action.name}, you gained "
+    // Add action to weekly logs with descriptive text (removed "Day" prefix)
+    String actionLog = "${action.name}, you gained "
         "${healthChange > 0 ? '+$healthChange health' : '$healthChange health'}, "
         "${energyChange > 0 ? '+$energyChange energy' : '$energyChange energy'}, "
         "${happinessChange > 0 ? '+$happinessChange happiness' : '$happinessChange happiness'}, "
@@ -193,7 +193,8 @@ class GameProvider extends ChangeNotifier {
         energy: 100, // Reset energy for new day
         completedActions: [], // Reset daily actions
       );
-      _lastActionResult = "Day 7 completed! Use 'Next Week' button to advance.";
+      // Remove the "Day __ Completed" pop-up message
+      _lastActionResult = null;
       return;
     }
 
@@ -218,19 +219,12 @@ class GameProvider extends ChangeNotifier {
     
     _lastActionResult = "Week completed! Final stats - Health: ${_gameState.health}, Happiness: ${_gameState.happiness}, Money: \$${_gameState.money}";
     
-    // Reset for new week
-    _gameState = GameState(
-      isGameStarted: true,
-      gameStartTime: _gameState.gameStartTime, // Keep original start date
-      money: _gameState.money, // Keep money between weeks
+    // Preserve Health, Energy, and Happiness when transitioning to next week
+    _gameState = _gameState.copyWith(
+      currentDay: 1,
       weeklyLogs: updatedLogs,
-      artistName: _gameState.artistName,
-      realName: _gameState.realName,
-      age: _gameState.age,
-      profilePicture: _gameState.profilePicture,
-      gender: _gameState.gender,
-      description: _gameState.description,
-      genre: _gameState.genre,
+      completedActions: [], // Reset daily actions for new week
+      // Health, energy, and happiness remain unchanged
     );
   }
 

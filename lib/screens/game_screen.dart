@@ -451,42 +451,45 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                             ),
                             const SizedBox(width: 16),
                             Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  gameState.artistName,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        gameState.artistName,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Money display moved to right
-                          Row(
-                            children: [
-                              const Icon(Icons.attach_money, color: Colors.white, size: 18),
-                              const SizedBox(width: 4),
-                              Text(
-                                '\${gameState.money}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.attach_money, color: Colors.white, size: 18),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        '\${gameState.money}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          Text(
-                            'Week ${_getWeekNumber(gameState)} (${gameState.gameStartTime != null ? _formatDate(gameState.gameStartTime!) : "No Date"})',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.7),
-                              fontSize: 14,
                             ),
-                          ),
+                            Text(
+                              'Week ${_getWeekNumber(gameState)} (${gameState.gameStartTime != null ? _formatDate(gameState.gameStartTime!) : "No Date"})',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.7),
+                                fontSize: 14,
+                              ),
                             ),
                           ],
                         ),
@@ -508,34 +511,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                   ),
                   
                   // Action Result
-                        // Removed popup for lastActionResult
-                        // if (gameProvider.lastActionResult != null)
-                        //   Container(
-                        //     margin: const EdgeInsets.all(16),
-                        //     padding: const EdgeInsets.all(12),
-                        //     decoration: BoxDecoration(
-                        //       color: accentColor.withOpacity(0.1),
-                        //       borderRadius: BorderRadius.circular(12),
-                        //       border: Border.all(color: accentColor),
-                        //     ),
-                        //     child: Row(
-                        //       children: [
-                        //         const Icon(Icons.info_outline, color: accentColor),
-                        //         const SizedBox(width: 8),
-                        //         Expanded(
-                        //           child: Text(
-                        //             gameProvider.lastActionResult!,
-                        //             style: const TextStyle(color: accentColor),
-                        //           ),
-                        //         ),
-                        //         IconButton(
-                        //           icon: const Icon(Icons.close),
-                        //           onPressed: gameProvider.clearLastActionResult,
-                        //           color: accentColor,
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ),
                   
                   // Actions Grid - 4 per row, smaller cards, no descriptions
                   Expanded(
@@ -674,53 +649,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                 ),
               ),
               
-              // Removed loading overlay for next week
-              // if (gameProvider.isLoading)
-              //   Container(
-              //     color: Colors.black.withOpacity(0.7),
-              //     child: Center(
-              //       child: Column(
-              //         mainAxisAlignment: MainAxisAlignment.center,
-              //         children: [
-              //           AnimatedBuilder(
-              //             animation: _musicNoteAnimation,
-              //             builder: (context, child) {
-              //               return Container(
-              //                 width: 80,
-              //                 height: 80,
-              //                 decoration: BoxDecoration(
-              //                   shape: BoxShape.circle,
-              //                   gradient: LinearGradient(
-              //                     colors: [
-              //                       accentColor.withOpacity(0.3),
-              //                       accentColor,
-              //                     ],
-              //                     stops: [0.0, _musicNoteAnimation.value],
-              //                     begin: Alignment.bottomCenter,
-              //                     end: Alignment.topCenter,
-              //                   ),
-              //                 ),
-              //                 child: const Icon(
-              //                   Icons.music_note,
-              //                   color: Colors.white,
-              //                   size: 40,
-              //                 ),
-              //               );
-              //             },
-              //           ),
-              //           const SizedBox(height: 20),
-              //           const Text(
-              //             'Advancing to next week...',
-              //             style: TextStyle(
-              //               color: Colors.white,
-              //               fontSize: 18,
-              //               fontWeight: FontWeight.bold,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
             ],
           );
         },

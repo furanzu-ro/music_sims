@@ -467,30 +467,31 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                           fontSize: 18,
                                         ),
                                       ),
+                                      // Moved date below artist name
+                                      Text(
+                                        gameState.gameStartTime != null ? _formatDate(gameState.gameStartTime!) : "No Date",
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.7),
+                                          fontSize: 14,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                   Row(
                                     children: [
                                       const Icon(Icons.attach_money, color: Colors.white, size: 18),
                                       const SizedBox(width: 4),
-                            Text(
-                              '\$${gameState.money}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
+                                      Text(
+                                        gameState.money.toString(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ],
-                              ),
-                            ),
-                            Text(
-                              'Week ${_getWeekNumber(gameState)} (${gameState.gameStartTime != null ? _formatDate(gameState.gameStartTime!) : "No Date"})',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.7),
-                                fontSize: 14,
                               ),
                             ),
                           ],
@@ -585,10 +586,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                               });
                             },
                             child: Row(
-                              children: const [
-                                Icon(Icons.history, color: accentColor),
-                                SizedBox(width: 8),
-                                Text(
+                              children: [
+                                const Icon(Icons.history, color: accentColor),
+                                const SizedBox(width: 8),
+                                const Text(
                                   'Weekly Log',
                                   style: TextStyle(
                                     fontSize: 18,
@@ -601,7 +602,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                           ),
                           const Spacer(),
                           ElevatedButton(
-                            onPressed: gameProvider.isLoading ? null : () => gameProvider.nextWeek(),
+                            onPressed: gameProvider.isLoading ? null : () async {
+                              await gameProvider.nextWeek();
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: accentColor,
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -609,10 +612,19 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            child: const Text(
-                              'Next Week',
-                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-                            ),
+                            child: gameProvider.isLoading
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Next Week',
+                                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                                  ),
                           ),
                         ],
                       ),

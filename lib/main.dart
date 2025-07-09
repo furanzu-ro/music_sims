@@ -31,24 +31,24 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: bgColor,
           fontFamily: 'Inter', // Keep Inter as main font
           textTheme: const TextTheme(
-            headline1: TextStyle(
+            displayLarge: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 32,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
-            headline2: TextStyle(
+            displayMedium: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 24,
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
-            bodyText1: TextStyle(
+            bodyLarge: TextStyle(
               fontFamily: 'Inter',
               fontSize: 16,
               color: Colors.white,
             ),
-            bodyText2: TextStyle(
+            bodyMedium: TextStyle(
               fontFamily: 'Inter',
               fontSize: 14,
               color: Colors.white70,

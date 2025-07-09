@@ -34,35 +34,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background image
-          Image.network(
-            'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [primaryColor, bgColor],
-                  ),
-                ),
-              );
-            },
-          ),
-          // Gradient overlay
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  bgColor.withOpacity(0.8),
-                  primaryColor.withOpacity(0.6),
-                ],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-              ),
-            ),
-          ),
+          // Background image removed for cleaner look
+          // Gradient overlay removed for cleaner look
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -106,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
-                              fontFamily: 'Pacifico',
+                              fontFamily: 'PressStart2P',
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -179,10 +152,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                 context: context,
                                 text: 'Start Game',
                                 icon: Icons.rocket_launch,
-                                isPrimary: true,
-                                onPressed: () {
-                                  Navigator.pushNamed(context, '/game');
-                                },
+                            isPrimary: true,
+                            onPressed: () async {
+                              Navigator.pushNamed(context, '/game').then((_) {
+                                // After returning from game screen, check if game started and navigate
+                                final gameProvider = Provider.of<GameProvider>(context, listen: false);
+                                if (gameProvider.gameState.isGameStarted) {
+                                  Navigator.pushReplacementNamed(context, '/main_navigation');
+                                }
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: accentColor,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                              elevation: 6,
+                              shadowColor: accentColor.withOpacity(0.6),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
                               ),
                             ],
                           ],

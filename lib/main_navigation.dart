@@ -36,13 +36,15 @@ class _MainNavigationState extends State<MainNavigation> {
         unselectedItemColor: Colors.white70,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
+        elevation: 10,
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.gamepad),
+            icon: Icon(Icons.sentiment_very_satisfied), // cartoony style icon
             label: 'Game',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.face), // cartoony style icon
             label: 'Profile',
           ),
         ],

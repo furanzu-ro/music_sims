@@ -95,31 +95,31 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   String _getActionIcon(String actionId) {
     switch (actionId) {
       case 'exercise':
-        return '🏃‍♂️';
+        return '🤸‍♂️'; // more cartoony emoji
       case 'sleep':
         return '😴';
       case 'eat_healthy':
-        return '🥗';
+        return '🥦'; // more cartoony emoji
       case 'doctor_visit':
-        return '👨‍⚕️';
+        return '🩺'; // more cartoony emoji
       case 'work':
-        return '💼';
+        return '🧑‍💼'; // more cartoony emoji
       case 'freelance':
         return '💻';
       case 'hang_out':
-        return '👥';
+        return '🧑‍🤝‍🧑'; // more cartoony emoji
       case 'date':
-        return '💕';
+        return '💖'; // more cartoony emoji
       case 'watch_movie':
-        return '🎬';
+        return '🍿'; // more cartoony emoji
       case 'play_games':
-        return '🎮';
+        return '🎲'; // more cartoony emoji
       case 'meditation':
         return '🧘‍♂️';
       case 'spa_day':
         return '🧖‍♀️';
       default:
-        return '⭐';
+        return '🌟'; // more cartoony emoji
     }
   }
 

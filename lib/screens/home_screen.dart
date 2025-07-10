@@ -98,45 +98,44 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 40),
                     Consumer<GameProvider>(
                       builder: (context, gameProvider, child) {
-                        if (gameProvider.isLoading) {
-                          return Container(
-                            padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                              color: cardColor.withOpacity(0.9),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: const Column(
-                              children: [
-                                CircularProgressIndicator(
-                                  color: accentColor,
-                                  strokeWidth: 3,
+                            if (gameProvider.isLoading) {
+                              return Container(
+                                padding: const EdgeInsets.all(24),
+                                decoration: BoxDecoration(
+                                  color: cardColor.withOpacity(0.9),
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
-                                SizedBox(height: 16),
-                                Text(
-                                  'Loading your journey...',
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 16,
+                                child: SizedBox(
+                                  height: 100,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      _buildFloatingNote(40, 80, 30, 0.0),
+                                      _buildFloatingNote(80, 90, 20, 0.3),
+                                      _buildFloatingNote(120, 85, 25, 0.6),
+                                      _buildFloatingNote(160, 90, 18, 0.9),
+                                      _buildFloatingNote(200, 80, 22, 0.2),
+                                      const Positioned(
+                                        bottom: 8,
+                                        child: Text(
+                                          'Loading your journey...',
+                                          style: TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          );
-                        }
+                              );
+                            }
 
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             if (gameProvider.gameState.isGameStarted) ...[
-                              _buildModernButton(
-                                context: context,
-                                text: 'Continue Game',
-                                icon: Icons.play_arrow,
-                                isPrimary: true,
-                                onPressed: () {
-                                  Navigator.pushReplacementNamed(context, '/main_navigation');
-                                },
-                              ),
+                              // Removed "Continue Game" button as requested
                               const SizedBox(height: 16),
                               _buildModernButton(
                                 context: context,
@@ -152,26 +151,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 context: context,
                                 text: 'Start Game',
                                 icon: Icons.rocket_launch,
-                            isPrimary: true,
-                            onPressed: () async {
-                              Navigator.pushNamed(context, '/game').then((_) {
-                                // After returning from game screen, check if game started and navigate
-                                final gameProvider = Provider.of<GameProvider>(context, listen: false);
-                                if (gameProvider.gameState.isGameStarted) {
-                                  Navigator.pushReplacementNamed(context, '/main_navigation');
-                                }
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: accentColor,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                              elevation: 6,
-                              shadowColor: accentColor.withOpacity(0.6),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
+                                isPrimary: true,
+                                onPressed: () async {
+                                  Navigator.pushNamed(context, '/game').then((_) {
+                                    // After returning from game screen, check if game started and navigate
+                                    final gameProvider = Provider.of<GameProvider>(context, listen: false);
+                                    if (gameProvider.gameState.isGameStarted) {
+                                      Navigator.pushReplacementNamed(context, '/main_navigation');
+                                    }
+                                  });
+                                },
                               ),
                             ],
                           ],

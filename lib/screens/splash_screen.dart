@@ -19,7 +19,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     super.initState();
 
     _controller = AnimationController(
-      duration: const Duration(seconds: 5),
+-      duration: const Duration(seconds: 5),
++      duration: const Duration(seconds: 10),
       vsync: this,
     );
 
@@ -31,9 +32,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       CurvedAnimation(parent: _controller, curve: Curves.linear),
     );
 
-    Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, '/home');
-    });
+-    Timer(const Duration(seconds: 3), () {
+-      Navigator.pushReplacementNamed(context, '/home');
+-    });
++    Timer(const Duration(seconds: 10), () {
++      Navigator.pushReplacementNamed(context, '/home');
++    });
   }
 
   @override

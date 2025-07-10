@@ -573,6 +573,118 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     );
   }
 
+  Widget _buildCreateArtistButton(GameProvider gameProvider) {
+    return Container(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () async {
+          if (_formKey.currentState?.validate() ?? false) {
+            _formKey.currentState?.save();
+
+            // Show cool loading dialog with music note animation
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => Center(
+                child: Card(
+                  color: cardColor,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedBuilder(
+                          animation: _musicNoteAnimation,
+                          builder: (context, child) {
+                            return Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: LinearGradient(
+                                  colors: [
+                                    accentColor.withOpacity(0.3),
+                                    accentColor,
+                                  ],
+                                  stops: [0.0, _musicNoteAnimation.value],
+                                  begin: Alignment.bottomCenter,
+                                  end: Alignment.topCenter,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.music_note,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Creating your artist profile...',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+
+            // Simulate loading
+            await Future.delayed(const Duration(seconds: 2));
+
+            gameProvider.setProfile(
+              artistName: _artistName,
+              realName: _realName,
+              age: _age,
+              profilePicture: _profilePicture,
+              gender: _gender,
+              description: _description,
+              genre: _genre,
+            );
+            gameProvider.startNewGame(_startingDate);
+
+            Navigator.of(context).pop(); // Close loading dialog
+            Navigator.pushReplacementNamed(context, '/main_navigation');
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: accentColor,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+          elevation: 10,
+          shadowColor: accentColor.withOpacity(0.6),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.star, size: 26),
+            const SizedBox(width: 12),
+            const Text(
+              'Create Artist',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                shadows: [
+                  Shadow(
+                    offset: Offset(1, 1),
+                    blurRadius: 3,
+                    color: Colors.black45,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildFormField({
     required String label,
     required IconData icon,

@@ -27,7 +27,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   String _gender = 'Male';
   String _description = '';
   String _genre = 'Classical';
-  DateTime _startingDate = DateTime.now();
+  String _country = 'USA';
+  int _startingYear = DateTime.now().year;
 
   @override
   void initState() {
@@ -54,7 +55,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   Future<void> _pickStartingDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _startingDate,
+      initialDate: DateTime(_startingYear),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
       builder: (context, child) {
@@ -73,9 +74,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         );
       },
     );
-    if (picked != null && picked != _startingDate) {
+    if (picked != null && picked.year != _startingYear) {
       setState(() {
-        _startingDate = picked;
+        _startingYear = picked.year;
       });
     }
   }
@@ -193,15 +194,16 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                   color: accentColor,
                                 ),
                                 const SizedBox(height: 16),
-                                const Text(
-                                  'Create Your Artist Profile',
-                                  style: TextStyle(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
+                          const Text(
+                            'Create Your Artist Profile',
+                            style: TextStyle(
+                              fontFamily: 'PressStart2P',
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                                 const SizedBox(height: 8),
                                 Text(
                                   'Tell us about your musical journey',
@@ -247,13 +249,18 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                           ),
                           const SizedBox(height: 16),
                           
-                          _buildFormField(
-                            label: 'Profile Picture URL (Optional)',
-                            icon: Icons.image,
-                            onSaved: (value) => _profilePicture = value ?? '',
+                          _buildImagePickerField(),
+                          const SizedBox(height: 16),
+
+                          _buildDropdownField(
+                            label: 'Country',
+                            icon: Icons.public,
+                            value: _country,
+                            items: const ['USA', 'UK', 'Brazil', 'France'],
+                            onChanged: (value) => setState(() => _country = value ?? 'USA'),
                           ),
                           const SizedBox(height: 16),
-                          
+
                           _buildDropdownField(
                             label: 'Gender',
                             icon: Icons.person_outline,
@@ -262,7 +269,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                             onChanged: (value) => setState(() => _gender = value ?? 'Male'),
                           ),
                           const SizedBox(height: 16),
-                          
+
                           _buildFormField(
                             label: 'Description',
                             icon: Icons.description,
@@ -270,7 +277,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                             onSaved: (value) => _description = value ?? '',
                           ),
                           const SizedBox(height: 16),
-                          
+
                           _buildDropdownField(
                             label: 'Music Genre',
                             icon: Icons.library_music,
@@ -279,8 +286,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                             onChanged: (value) => setState(() => _genre = value ?? 'Classical'),
                           ),
                           const SizedBox(height: 16),
-                          
-                          // Starting Date Field
+
+                          // Starting Year Field
                           GestureDetector(
                             onTap: _pickStartingDate,
                             child: Container(
@@ -295,7 +302,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                   const Icon(Icons.calendar_today, color: accentColor),
                                   const SizedBox(width: 16),
                                   Text(
-                                    "Starting Date: ${_formatDate(_startingDate)}",
+                                    "Starting Year: $_startingYear",
                                     style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 16),
                                   ),
                                 ],
@@ -694,20 +701,21 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     int maxLines = 1,
   }) {
     return Container(
+      margin: const EdgeInsets.symmetric(vertical: 6),
       decoration: BoxDecoration(
-        color: cardColor.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: primaryColor.withOpacity(0.3)),
+        color: cardColor.withOpacity(0.85),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: primaryColor.withOpacity(0.4)),
       ),
       child: TextFormField(
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+          labelStyle: TextStyle(color: Colors.white.withOpacity(0.85)),
           prefixIcon: Icon(icon, color: accentColor),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.all(16),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         ),
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white, fontSize: 14),
         keyboardType: keyboardType,
         maxLines: maxLines,
         validator: validator,
@@ -724,22 +732,23 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     required void Function(String?) onChanged,
   }) {
     return Container(
+      margin: const EdgeInsets.symmetric(vertical: 6),
       decoration: BoxDecoration(
-        color: cardColor.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: primaryColor.withOpacity(0.3)),
+        color: cardColor.withOpacity(0.85),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: primaryColor.withOpacity(0.4)),
       ),
       child: DropdownButtonFormField<String>(
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+          labelStyle: TextStyle(color: Colors.white.withOpacity(0.85)),
           prefixIcon: Icon(icon, color: accentColor),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.all(16),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         ),
         value: value,
         dropdownColor: cardColor,
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white, fontSize: 14),
         items: items.map((item) => DropdownMenuItem(
           value: item,
           child: Text(item, style: const TextStyle(color: Colors.white)),

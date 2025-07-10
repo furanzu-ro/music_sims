@@ -144,10 +144,32 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     ),
                   ),
                   const SizedBox(height: 32),
-                  // Loading indicator
-                  const CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    strokeWidth: 3,
+                  // Loading indicator replaced with music note animation
+                  AnimatedBuilder(
+                    animation: _animation,
+                    builder: (context, child) {
+                      return Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xFF10B981).withOpacity(0.3),
+                              const Color(0xFF10B981),
+                            ],
+                            stops: [0.0, _animation.value],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.music_note,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

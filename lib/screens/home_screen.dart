@@ -11,10 +11,24 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  late AnimationController _musicNoteController;
+  late Animation<double> _musicNoteAnimation;
+
   @override
   void initState() {
     super.initState();
+    _musicNoteController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat();
+    _musicNoteAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _musicNoteController,
+      curve: Curves.easeInOut,
+    ));
     _checkSavedGame();
   }
 
@@ -26,6 +40,30 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.pushReplacementNamed(context, '/main_navigation');
       });
     }
+  }
+
+  Widget _buildFloatingNote(double startX, double startY, double size, double delay) {
+    return AnimatedBuilder(
+      animation: _musicNoteController,
+      builder: (context, child) {
+        double progress = (_musicNoteAnimation.value + delay) % 1;
+        double y = startY - (progress * 200);
+        double x = startX + (10 * (progress - 0.5));
+        double opacity = 1.0 - progress;
+        return Positioned(
+          left: x,
+          top: y,
+          child: Opacity(
+            opacity: opacity,
+            child: Icon(
+              Icons.music_note,
+              size: size,
+              color: Colors.white.withOpacity(0.7),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -98,38 +136,38 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 40),
                     Consumer<GameProvider>(
                       builder: (context, gameProvider, child) {
-                            if (gameProvider.isLoading) {
-                              return Container(
-                                padding: const EdgeInsets.all(24),
-                                decoration: BoxDecoration(
-                                  color: cardColor.withOpacity(0.9),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: SizedBox(
-                                  height: 100,
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      _buildFloatingNote(40, 80, 30, 0.0),
-                                      _buildFloatingNote(80, 90, 20, 0.3),
-                                      _buildFloatingNote(120, 85, 25, 0.6),
-                                      _buildFloatingNote(160, 90, 18, 0.9),
-                                      _buildFloatingNote(200, 80, 22, 0.2),
-                                      const Positioned(
-                                        bottom: 8,
-                                        child: Text(
-                                          'Loading your journey...',
-                                          style: TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 16,
-                                          ),
-                                        ),
+                        if (gameProvider.isLoading) {
+                          return Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: cardColor.withOpacity(0.9),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: SizedBox(
+                              height: 100,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  _buildFloatingNote(40, 80, 30, 0.0),
+                                  _buildFloatingNote(80, 90, 20, 0.3),
+                                  _buildFloatingNote(120, 85, 25, 0.6),
+                                  _buildFloatingNote(160, 90, 18, 0.9),
+                                  _buildFloatingNote(200, 80, 22, 0.2),
+                                  const Positioned(
+                                    bottom: 8,
+                                    child: Text(
+                                      'Loading your journey...',
+                                      style: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 16,
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            }
+                                ],
+                              ),
+                            ),
+                          );
+                        }
 
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,

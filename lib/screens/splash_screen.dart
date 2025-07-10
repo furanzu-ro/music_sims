@@ -22,11 +22,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 -      duration: const Duration(seconds: 5),
 +      duration: const Duration(seconds: 10),
       vsync: this,
-    );
+    )..forward();
 
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
-
-    _controller.forward();
 
     _floatingNotesAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: Curves.linear),

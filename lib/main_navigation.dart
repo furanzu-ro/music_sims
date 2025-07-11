@@ -30,14 +30,20 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
     'Profile',
   ];
 
+  static const double _indicatorWidth = 100;
+  static const double _indicatorHeight = 40;
+  static const double _indicatorRadius = 20;
+  static const double _iconSize = 28;
+  static const double _fontSize = 14;
+
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 700),
       vsync: this,
     );
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.elasticOut);
   }
 
   void _onItemTapped(int index) {
@@ -57,46 +63,49 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
         child: Stack(
           alignment: Alignment.centerLeft,
           children: [
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              left: isSelected ? 0 : 1000, // Move offscreen when not selected
-              child: Container(
-                width: 100,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: accentColor,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: accentColor.withOpacity(0.6),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 400),
+              child: isSelected
+                  ? Container(
+                      key: ValueKey<int>(_selectedIndex),
+                      width: _indicatorWidth,
+                      height: _indicatorHeight,
+                      decoration: BoxDecoration(
+                        color: accentColor.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(_indicatorRadius),
+                        boxShadow: [
+                          BoxShadow(
+                            color: accentColor.withOpacity(0.4),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.only(left: 12),
+                      child: Row(
+                        children: [
+                          Icon(icon, color: Colors.white, size: _iconSize),
+                          const SizedBox(width: 8),
+                          Text(
+                            label,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : SizedBox(
+                      key: ValueKey<int>(-1),
+                      width: _indicatorWidth,
+                      height: _indicatorHeight,
                     ),
-                  ],
-                ),
-              ),
             ),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(icon, color: isSelected ? Colors.white : Colors.black54, size: 28),
-                  if (isSelected) ...[
-                    const SizedBox(height: 4),
-                    AnimatedDefaultTextStyle(
-                      duration: const Duration(milliseconds: 300),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                      child: Text(label),
-                    ),
-                  ],
-                ],
-              ),
+              child: Icon(icon, color: isSelected ? Colors.transparent : Colors.black87, size: _iconSize),
             ),
           ],
         ),

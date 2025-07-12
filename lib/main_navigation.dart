@@ -71,13 +71,13 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
                       width: _indicatorWidth,
                       height: _indicatorHeight,
                       decoration: BoxDecoration(
-                        color: accentColor.withOpacity(0.2),
+                        color: accentColor,
                         borderRadius: BorderRadius.circular(_indicatorRadius),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
-                            color: accentColor.withOpacity(0.4),
+                            color: accentColor,
                             blurRadius: 8,
-                            offset: const Offset(0, 3),
+                            offset: Offset(0, 3),
                           ),
                         ],
                       ),
@@ -97,7 +97,7 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
                         ],
                       ),
                     )
-                  : SizedBox(
+                  : const SizedBox(
                       key: ValueKey<int>(-1),
                       width: _indicatorWidth,
                       height: _indicatorHeight,

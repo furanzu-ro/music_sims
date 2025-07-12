@@ -6,7 +6,6 @@ import 'screens/splash_screen.dart' as splash;
 import 'screens/home_screen.dart';
 import 'screens/game_screen.dart' as game;
 import 'screens/profile_screen.dart';
-import 'screens/date_selection_screen.dart';
 import 'providers/game_provider.dart';
 import 'utils/constants.dart';
 import 'main_navigation.dart' as main_nav;
@@ -73,7 +72,6 @@ class MyApp extends StatelessWidget {
           '/main_navigation': (context) => const main_nav.MainNavigation(),
           '/game': (context) => const game.GameScreen(),
           '/profile': (context) => const ProfileScreen(),
-          '/date_selection': (context) => const DateSelectionScreen(),
         },
       ),
     );

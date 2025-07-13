@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/game_provider.dart';
@@ -14,7 +15,6 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
-  bool _showWeeklyLog = false;
 
   final _formKey = GlobalKey<FormState>();
   late AnimationController _musicNoteController;
@@ -511,34 +511,34 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Removed the "Daily Actions" title as per user request
-                          // const Text(
-                          //   'Daily Actions',
-                          //   style: TextStyle(
-                          //     fontSize: 20,
-                          //     fontWeight: FontWeight.bold,
-                          //     color: Colors.white,
-                          //   ),
-                          // ),
-                          // const SizedBox(height: 16),
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 4,
-                              crossAxisSpacing: 8,
-                              mainAxisSpacing: 8,
-                              childAspectRatio: 1.0,
-                            ),
-                            itemCount:
-                                gameProvider.getAvailableActions().length,
-                            itemBuilder: (context, index) {
-                              final action =
-                                  gameProvider.getAvailableActions()[index];
-                              return _buildActionCard(
-                                  context, action, gameProvider);
-                            },
+                       
+                          Column(
+                            children: [
+                              const SizedBox(height: 12),
+                              Container(
+                                height: 70,
+                                width: 70,
+                                margin: const EdgeInsets.symmetric(horizontal: 16),
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: const Center(
+                                  child: FaIcon(
+                                    FontAwesomeIcons.instagram,
+                                    size: 30,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

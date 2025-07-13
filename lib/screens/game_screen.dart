@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+=======
+>>>>>>> origin/main
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/game_provider.dart';
@@ -15,6 +18,10 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
+<<<<<<< HEAD
+=======
+  bool _showWeeklyLog = false;
+>>>>>>> origin/main
 
   final _formKey = GlobalKey<FormState>();
   late AnimationController _musicNoteController;
@@ -456,6 +463,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                         ),
                                       ),
                                     ],
+<<<<<<< HEAD
                                   ),
                                   Row(
                                     children: [
@@ -535,10 +543,103 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                     FontAwesomeIcons.instagram,
                                     size: 30,
                                     color: Colors.white70,
+=======
+>>>>>>> origin/main
                                   ),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.attach_money,
+                                          color: Colors.white, size: 18),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        gameState.money.toString(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        // Compact stats
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildCompactStat(
+                                'Health', gameState.health, Icons.favorite,
+                                color: gameState.health > 50
+                                    ? accentColor
+                                    : dangerColor),
+                            _buildCompactStat('Energy', gameState.energy,
+                                Icons.battery_charging_full,
+                                color: gameState.energy > 30
+                                    ? accentColor
+                                    : warningColor),
+                            _buildCompactStat(
+                                'Happiness', gameState.happiness, Icons.mood,
+                                color: accentColor),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Action Result
+
+                  // Actions Grid - 4 per row, smaller cards, no descriptions
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16,
+                          200), // Extra bottom padding for weekly log
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Removed the "Daily Actions" title as per user request
+                          // const Text(
+                          //   'Daily Actions',
+                          //   style: TextStyle(
+                          //     fontSize: 20,
+                          //     fontWeight: FontWeight.bold,
+                          //     color: Colors.white,
+                          //   ),
+                          // ),
+                          // const SizedBox(height: 16),
+                          // Replace daily actions grid with one box called Instagram, unclickable
+                          Container(
+                            height: 70,
+                            margin: const EdgeInsets.symmetric(horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: cardColor.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
                                 ),
+<<<<<<< HEAD
                               ),
                             ],
+=======
+                              ],
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'Instagram',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ),
+>>>>>>> origin/main
                           ),
                         ],
                       ),

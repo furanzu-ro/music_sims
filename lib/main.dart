@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: '/splash',
         routes: {
-          '/splash': (context) => splash.SplashScreen(),
+          '/splash': (context) => const splash.SplashScreen(),
           '/home': (context) => const HomeScreen(),
           '/main_navigation': (context) => const main_nav.MainNavigation(),
           '/game': (context) => const game.GameScreen(),

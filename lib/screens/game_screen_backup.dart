@@ -34,7 +34,7 @@ class _GameScreenState extends State<GameScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: accentColor,
               onPrimary: Colors.white,
               onSurface: Colors.black,

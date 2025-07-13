@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/game_provider.dart';
-import '../models/game_action.dart';
-import '../models/game_state.dart';
 import '../utils/constants.dart';
 
 class GameScreen extends StatefulWidget {
@@ -473,10 +470,11 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                   ],
                                 ),
                                 child: const Center(
-                                  child: FaIcon(
-                                    FontAwesomeIcons.instagram,
-                                    size: 30,
-                                    color: Colors.white70,
+                                   child: Image(
+                                    image: AssetImage('assets/icons/instagram_custom.png'),
+                                    width: 30,
+                                    height: 30,
+                                    fit: BoxFit.contain,
                                   ),
                                 ),
                               ),

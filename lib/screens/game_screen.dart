@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-=======
->>>>>>> origin/main
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/game_provider.dart';
@@ -18,10 +15,6 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
-<<<<<<< HEAD
-=======
-  bool _showWeeklyLog = false;
->>>>>>> origin/main
 
   final _formKey = GlobalKey<FormState>();
   late AnimationController _musicNoteController;
@@ -111,34 +104,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  Future<void> _pickStartingDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(_startingYear),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: accentColor,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(foregroundColor: accentColor),
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null && picked.year != _startingYear) {
-      setState(() {
-        _startingYear = picked.year;
-      });
-    }
-  }
 
   String _formatDate(DateTime date) {
     return "${_monthName(date.month)} ${date.day}, ${date.year}";
@@ -161,37 +126,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       "December"
     ];
     return monthNames[month];
-  }
-
-  String _getActionIcon(String actionId) {
-    switch (actionId) {
-      case 'exercise':
-        return '🤸‍♂️'; // more cartoony emoji
-      case 'sleep':
-        return '😴';
-      case 'eat_healthy':
-        return '🥦'; // more cartoony emoji
-      case 'doctor_visit':
-        return '🩺'; // more cartoony emoji
-      case 'work':
-        return '🧑‍💼'; // more cartoony emoji
-      case 'freelance':
-        return '💻';
-      case 'hang_out':
-        return '🧑‍🤝‍🧑'; // more cartoony emoji
-      case 'date':
-        return '💖'; // more cartoony emoji
-      case 'watch_movie':
-        return '🍿'; // more cartoony emoji
-      case 'play_games':
-        return '🎲'; // more cartoony emoji
-      case 'meditation':
-        return '🧘‍♂️';
-      case 'spa_day':
-        return '🧖‍♀️';
-      default:
-        return '🌟'; // more cartoony emoji
-    }
   }
 
   @override
@@ -298,11 +232,13 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                             icon: Icons.cake,
                             keyboardType: TextInputType.number,
                             validator: (value) {
-                              if (value == null || value.isEmpty)
+                              if (value == null || value.isEmpty) {
                                 return 'Please enter age';
+                              }
                               final age = int.tryParse(value);
-                              if (age == null || age <= 0)
+                              if (age == null || age <= 0) {
                                 return 'Please enter a valid age';
+                              }
                               return null;
                             },
                             onSaved: (value) =>
@@ -363,13 +299,15 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                             icon: Icons.calendar_today,
                             keyboardType: TextInputType.number,
                             validator: (value) {
-                              if (value == null || value.isEmpty)
+                              if (value == null || value.isEmpty) {
                                 return 'Please enter year';
+                              }
                               final year = int.tryParse(value);
                               if (year == null ||
                                   year < 1900 ||
-                                  year > DateTime.now().year)
+                                  year > DateTime.now().year) {
                                 return 'Please enter a valid year';
+                              }
                               return null;
                             },
                             onSaved: (value) => _startingYear = int.tryParse(
@@ -463,7 +401,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                         ),
                                       ),
                                     ],
-<<<<<<< HEAD
                                   ),
                                   Row(
                                     children: [
@@ -508,18 +445,15 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
-
-                  // Action Result
-
-                  // Actions Grid - 4 per row, smaller cards, no descriptions
+               
                   Expanded(
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16,
-                          200), // Extra bottom padding for weekly log
+                          200), 
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                       
+                  
                           Column(
                             children: [
                               const SizedBox(height: 12),
@@ -543,103 +477,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                                     FontAwesomeIcons.instagram,
                                     size: 30,
                                     color: Colors.white70,
-=======
->>>>>>> origin/main
                                   ),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.attach_money,
-                                          color: Colors.white, size: 18),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        gameState.money.toString(),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        // Compact stats
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _buildCompactStat(
-                                'Health', gameState.health, Icons.favorite,
-                                color: gameState.health > 50
-                                    ? accentColor
-                                    : dangerColor),
-                            _buildCompactStat('Energy', gameState.energy,
-                                Icons.battery_charging_full,
-                                color: gameState.energy > 30
-                                    ? accentColor
-                                    : warningColor),
-                            _buildCompactStat(
-                                'Happiness', gameState.happiness, Icons.mood,
-                                color: accentColor),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Action Result
-
-                  // Actions Grid - 4 per row, smaller cards, no descriptions
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16,
-                          200), // Extra bottom padding for weekly log
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Removed the "Daily Actions" title as per user request
-                          // const Text(
-                          //   'Daily Actions',
-                          //   style: TextStyle(
-                          //     fontSize: 20,
-                          //     fontWeight: FontWeight.bold,
-                          //     color: Colors.white,
-                          //   ),
-                          // ),
-                          // const SizedBox(height: 16),
-                          // Replace daily actions grid with one box called Instagram, unclickable
-                          Container(
-                            height: 70,
-                            margin: const EdgeInsets.symmetric(horizontal: 16),
-                            decoration: BoxDecoration(
-                              color: cardColor.withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 3),
                                 ),
-<<<<<<< HEAD
                               ),
                             ],
-=======
-                              ],
-                            ),
-                            child: const Center(
-                              child: Text(
-                                'Instagram',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white70,
-                                ),
-                              ),
-                            ),
->>>>>>> origin/main
                           ),
                         ],
                       ),
@@ -648,7 +489,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                 ],
               ),
 
-              // Weekly Log box like daily actions
+            
               Container(
                 margin:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -728,7 +569,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildCreateArtistButton(GameProvider gameProvider) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () async {
@@ -937,72 +778,5 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
         ),
       ],
     );
-  }
-
-  Widget _buildActionCard(
-      BuildContext context, GameAction action, GameProvider gameProvider) {
-    final canPerform = gameProvider.gameState.energy >= action.energyCost;
-
-    return Card(
-      color: cardColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () => gameProvider.performAction(action, context: context),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Large emoji icon
-              Text(
-                _getActionIcon(action.id),
-                style: const TextStyle(fontSize: 24),
-              ),
-              const SizedBox(height: 4),
-              // Action name (smaller text)
-              Text(
-                action.name,
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: canPerform ? Colors.white : Colors.grey,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              // Energy cost badge
-              if (action.energyCost > 0) ...[
-                const SizedBox(height: 2),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                  decoration: BoxDecoration(
-                    color: canPerform ? accentColor : Colors.grey,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    '${action.energyCost}⚡',
-                    style: const TextStyle(
-                      fontSize: 8,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  int _getWeekNumber(GameState gameState) {
-    int completedWeeks = gameState.weeklyLogs
-        .where((String log) => log.contains('Week completed'))
-        .length;
-    return completedWeeks + 1;
   }
 }

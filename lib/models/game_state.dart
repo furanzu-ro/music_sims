@@ -8,7 +8,6 @@ class GameState {
   final List<String> completedActions;
   final bool isGameStarted;
   final DateTime? gameStartTime;
-  final List<String> weeklyLogs;
 
   // New profile fields
   final String artistName;
@@ -29,7 +28,6 @@ class GameState {
     this.completedActions = const [],
     this.isGameStarted = false,
     this.gameStartTime,
-    this.weeklyLogs = const [],
     this.artistName = '',
     this.realName = '',
     this.age = 0,
@@ -49,7 +47,6 @@ class GameState {
     List<String>? completedActions,
     bool? isGameStarted,
     DateTime? gameStartTime,
-    List<String>? weeklyLogs,
     String? artistName,
     String? realName,
     int? age,
@@ -68,7 +65,6 @@ class GameState {
       completedActions: completedActions ?? List.from(this.completedActions),
       isGameStarted: isGameStarted ?? this.isGameStarted,
       gameStartTime: gameStartTime ?? this.gameStartTime,
-      weeklyLogs: weeklyLogs ?? List.from(this.weeklyLogs),
       artistName: artistName ?? this.artistName,
       realName: realName ?? this.realName,
       age: age ?? this.age,
@@ -90,7 +86,6 @@ class GameState {
       'completedActions': completedActions,
       'isGameStarted': isGameStarted,
       'gameStartTime': gameStartTime?.toIso8601String(),
-      'weeklyLogs': weeklyLogs,
       'artistName': artistName,
       'realName': realName,
       'age': age,
@@ -114,9 +109,6 @@ class GameState {
       gameStartTime: json['gameStartTime'] != null 
           ? DateTime.parse(json['gameStartTime']) 
           : null,
-      weeklyLogs: json['weeklyLogs'] != null 
-          ? List<String>.from(json['weeklyLogs']) 
-          : [],
       artistName: json['artistName'] ?? '',
       realName: json['realName'] ?? '',
       age: json['age'] ?? 0,

@@ -157,23 +157,21 @@ class GameProvider extends ChangeNotifier {
     final happinessChange = action.happinessChange + random.nextInt(5) - 2;
     final moneyChange = action.moneyChange + random.nextInt(10) - 5;
 
-    // Add action to weekly logs with descriptive text (removed "Day" prefix)
-    String actionLog = "${action.name}, you gained "
+    // Removed weekly log related code
         "${healthChange > 0 ? '+$healthChange health' : '$healthChange health'}, "
         "${energyChange > 0 ? '+$energyChange energy' : '$energyChange energy'}, "
         "${happinessChange > 0 ? '+$happinessChange happiness' : '$happinessChange happiness'}, "
         "${moneyChange > 0 ? '+\$$moneyChange' : '-\$${moneyChange.abs()}'}.";
 
-    List<String> updatedLogs = List.from(_gameState.weeklyLogs)..add(actionLog);
-
+    // Removed weeklyLogs related code
     _gameState = _gameState.copyWith(
       health: (_gameState.health + healthChange).clamp(0, 100),
       energy: (_gameState.energy + energyChange - action.energyCost).clamp(0, 100),
       happiness: (_gameState.happiness + happinessChange).clamp(0, 100),
       money: (_gameState.money + moneyChange).clamp(0, 9999),
       completedActions: [..._gameState.completedActions, action.id],
-      weeklyLogs: updatedLogs,
     );
+
 
     _lastActionResult = _generateActionResult(action, healthChange, energyChange, happinessChange, moneyChange);
     
@@ -228,17 +226,12 @@ class GameProvider extends ChangeNotifier {
 
   void _completeWeek() {
     // This method is now only called by nextWeek() button
-    String logEntry = "Week ${(_gameState.weeklyLogs.where((log) => log.contains('Week')).length + 1)} completed on ${DateTime.now().toLocal().toString().split(' ')[0]} - "
-        "Health: ${_gameState.health}, Happiness: ${_gameState.happiness}, Money: \$${_gameState.money}";
-    
-    List<String> updatedLogs = List.from(_gameState.weeklyLogs)..add(logEntry);
-    
+    // Removed weeklyLogs related code
     _lastActionResult = "Week completed! Final stats - Health: ${_gameState.health}, Happiness: ${_gameState.happiness}, Money: \$${_gameState.money}";
     
     // Preserve Health, Energy, and Happiness when transitioning to next week
     _gameState = _gameState.copyWith(
       currentDay: 1,
-      weeklyLogs: updatedLogs,
       completedActions: [], // Reset daily actions for new week
       // Health, energy, and happiness remain unchanged
     );

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/splash_screen.dart' as splash;
-import 'screens/home_screen.dart';
+import 'screens/welcome_screen.dart';
 import 'screens/game_screen.dart' as game;
 import 'screens/profile_screen.dart';
 import 'providers/game_provider.dart';
@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
         initialRoute: '/splash',
         routes: {
           '/splash': (context) => const splash.SplashScreen(),
-          '/home': (context) => const HomeScreen(),
+          '/welcome': (context) => const WelcomeScreen(),
           '/main_navigation': (context) => const main_nav.MainNavigation(),
           '/game': (context) => const game.GameScreen(),
           '/profile': (context) => const ProfileScreen(),

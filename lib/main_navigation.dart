@@ -1,5 +1,7 @@
+
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'screens/game_screen.dart';
+import 'package:music_sims/screens/game_home_screen.dart';
 import 'screens/profile_screen.dart';
 import 'utils/constants.dart';
 
@@ -13,10 +15,9 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
   late AnimationController _controller;
-  late Animation<double> _animation;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    GameScreen(),
+    GameHomeScreen(),
     ProfileScreen(),
   ];
 
@@ -30,11 +31,7 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
     'Profile',
   ];
 
-  static const double _indicatorWidth = 100;
-  static const double _indicatorHeight = 40;
-  static const double _indicatorRadius = 20;
   static const double _iconSize = 28;
-  static const double _fontSize = 14;
 
   @override
   void initState() {
@@ -43,7 +40,6 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
       duration: const Duration(milliseconds: 700),
       vsync: this,
     );
-    _animation = CurvedAnimation(parent: _controller, curve: Curves.elasticOut);
   }
 
   void _onItemTapped(int index) {
@@ -60,54 +56,39 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
     return Expanded(
       child: GestureDetector(
         onTap: () => _onItemTapped(index),
-        child: Stack(
-          alignment: Alignment.centerLeft,
-          children: [
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 400),
-              child: isSelected
-                  ? Container(
-                      key: ValueKey<int>(_selectedIndex),
-                      width: _indicatorWidth,
-                      height: _indicatorHeight,
-                      decoration: BoxDecoration(
-                        color: accentColor,
-                        borderRadius: BorderRadius.circular(_indicatorRadius),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: accentColor,
-                            blurRadius: 8,
-                            offset: Offset(0, 3),
+        child: Container(
+          padding: const EdgeInsets.only(top: 6, bottom: 1),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: isSelected ? Colors.white : Colors.black54, size: _iconSize),
+              const SizedBox(height: 4),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 400),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+                child: isSelected
+                    ? Container(
+                        key: ValueKey<int>(index),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          label,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
                           ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.only(left: 12),
-                      child: Row(
-                        children: [
-                          Icon(icon, color: Colors.white, size: _iconSize),
-                          const SizedBox(width: 8),
-                          Text(
-                            label,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : const SizedBox(
-                      key: ValueKey<int>(-1),
-                      width: _indicatorWidth,
-                      height: _indicatorHeight,
-                    ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-              child: Icon(icon, color: isSelected ? Colors.transparent : Colors.black87, size: _iconSize),
-            ),
-          ],
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -116,27 +97,40 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _widgetOptions.elementAt(_selectedIndex),
+      extendBody: true,
+      body: Padding(
+        padding: const EdgeInsets.only(bottom: 60), // Add bottom padding to avoid content under nav bar
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: primaryColor,
+        margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+        height: 60,
+        child: ClipRRect(
           borderRadius: BorderRadius.circular(40),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -3),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              height: 60,
+              decoration: BoxDecoration(
+                color: primaryColor, 
+                borderRadius: BorderRadius.circular(40),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 15,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNavItem(icon: _icons[0], label: _labels[0], index: 0),
+                  _buildNavItem(icon: _icons[1], label: _labels[1], index: 1),
+                ],
+              ),
             ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(icon: _icons[0], label: _labels[0], index: 0),
-            _buildNavItem(icon: _icons[1], label: _labels[1], index: 1),
-          ],
+          ),
         ),
       ),
     );

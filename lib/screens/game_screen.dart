@@ -24,7 +24,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   String _profilePicture = '';
   String _gender = 'Male';
   String _description = '';
-  String _genre = 'Classical';
+  String _genre = 'Pop';
   String _country = 'USA';
   int _startingYear = DateTime.now().year;
 
@@ -102,35 +102,13 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   }
 
 
-  String _formatDate(DateTime date) {
-    return "${_monthName(date.month)} ${date.day}, ${date.year}";
-  }
 
-  String _monthName(int month) {
-    const monthNames = [
-      "",
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December"
-    ];
-    return monthNames[month];
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Consumer<GameProvider>(
         builder: (context, gameProvider, child) {
-          final gameState = gameProvider.gameState;
 
           if (!gameProvider.isProfileComplete) {
             // Show profile creation form
@@ -276,8 +254,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                             icon: Icons.library_music,
                             value: _genre,
                             items: const [
+                               'Pop',
                               'Classical',
-                              'Pop',
                               'Rock',
                               'Hip-hop',
                               'Electronic',
@@ -287,7 +265,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                               'Folk'
                             ],
                             onChanged: (value) =>
-                                setState(() => _genre = value ?? 'Classical'),
+                                setState(() => _genre = value ?? 'Pop'),
                           ),
                           const SizedBox(height: 12),
 
@@ -327,240 +305,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             );
           }
 
-          // Game Home Screen (with bottom nav)
-          return Stack(
-            children: [
-              Column(
-                children: [
-                  // Compact Stats Header
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 16),
-                    decoration: const BoxDecoration(
-                      color: cardColor,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        // Profile section (smaller)
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border:
-                                    Border.all(color: accentColor, width: 2),
-                              ),
-                              child: CircleAvatar(
-                                radius: 25,
-                                backgroundColor: primaryColor,
-                                backgroundImage:
-                                    gameState.profilePicture.isNotEmpty
-                                        ? NetworkImage(gameState.profilePicture)
-                                        : null,
-                                child: gameState.profilePicture.isEmpty
-                                    ? const Icon(Icons.person,
-                                        size: 25, color: Colors.white)
-                                    : null,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        gameState.artistName,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                      // Moved date below artist name
-                                      Text(
-                                        gameState.gameStartTime != null
-                                            ? _formatDate(
-                                                gameState.gameStartTime!)
-                                            : "No Date",
-                                        style: TextStyle(
-                                          color: Colors.white.withOpacity(0.7),
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.attach_money,
-                                          color: Colors.white, size: 18),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        gameState.money.toString(),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        // Compact stats
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _buildCompactStat(
-                                'Health', gameState.health, Icons.favorite,
-                                color: gameState.health > 50
-                                    ? accentColor
-                                    : dangerColor),
-                            _buildCompactStat('Energy', gameState.energy,
-                                Icons.battery_charging_full,
-                                color: gameState.energy > 30
-                                    ? accentColor
-                                    : warningColor),
-                            _buildCompactStat(
-                                'Happiness', gameState.happiness, Icons.mood,
-                                color: accentColor),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-               
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16,
-                          200), 
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                  
-                          Column(
-                            children: [
-                              const SizedBox(height: 12),
-                              Container(
-                                height: 70,
-                                width: 70,
-                                margin: const EdgeInsets.symmetric(horizontal: 16),
-                                decoration: BoxDecoration(
-                                  color: Colors.transparent,
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: const Center(
-                                   child: Image(
-                                    image: AssetImage('assets/icons/instagram_custom.png'),
-                                    width: 30,
-                                    height: 30,
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-            
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: cardColor.withOpacity(0.95),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/weekly_log');
-                      },
-                      child: const Row(
-                        children: [
-                          Icon(Icons.history, color: accentColor),
-                          SizedBox(width: 8),
-                          Text(
-                            'Weekly Log',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Spacer(),
-                    ElevatedButton(
-                      onPressed: gameProvider.isLoading
-                          ? null
-                          : () async {
-                              await gameProvider.nextWeek();
-                            },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: accentColor,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: gameProvider.isLoading
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Text(
-                              'Next Week',
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
+          // Removed Game Home Screen UI code as per request
+          // Returning an empty container instead
+          return Container();
         },
       ),
     );
@@ -753,28 +500,4 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildCompactStat(String label, int value, IconData icon,
-      {Color? color}) {
-    return Column(
-      children: [
-        Icon(icon, color: color ?? Colors.white70, size: 20),
-        const SizedBox(height: 4),
-        Text(
-          '$value%',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: color ?? Colors.white,
-          ),
-        ),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 10,
-            color: Colors.white70,
-          ),
-        ),
-      ],
-    );
-  }
 }

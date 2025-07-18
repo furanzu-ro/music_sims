@@ -1,7 +1,9 @@
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:music_sims/providers/game_provider.dart';
 import 'package:music_sims/screens/game_home_screen.dart';
+import 'package:provider/provider.dart';
 import 'screens/profile_screen.dart';
 import 'utils/constants.dart';
 
@@ -98,40 +100,64 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      body: Padding(
-        padding: const EdgeInsets.only(bottom: 60), // Add bottom padding to avoid content under nav bar
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
-        height: 60,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(40),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 60), // Add bottom padding to avoid content under nav bar
+            child: _widgetOptions.elementAt(_selectedIndex),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
             child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
               height: 60,
-              decoration: BoxDecoration(
-                color: primaryColor, 
+              alignment: Alignment.bottomCenter,
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(40),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    blurRadius: 15,
-                    offset: const Offset(0, 6),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: primaryColor, 
+                      borderRadius: BorderRadius.circular(40),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 15,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildNavItem(icon: _icons[0], label: _labels[0], index: 0),
+                        _buildNavItem(icon: _icons[1], label: _labels[1], index: 1),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavItem(icon: _icons[0], label: _labels[0], index: 0),
-                  _buildNavItem(icon: _icons[1], label: _labels[1], index: 1),
-                ],
+                ),
               ),
             ),
           ),
-        ),
+          Consumer<GameProvider>(
+            builder: (context, gameProvider, child) {
+              if (gameProvider.isLoading) {
+                return Container(
+                  color: Colors.black.withOpacity(0.7),
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: const SizedBox.shrink(),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
+          ),
+        ],
       ),
     );
   }

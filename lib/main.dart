@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_fonts/google_fonts.dart';  // Added import for Google Fonts
 import 'screens/splash_screen.dart' as splash;
 import 'screens/welcome_screen.dart';
 import 'screens/game_screen.dart' as game;
@@ -28,27 +29,23 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primaryColor: primaryColor,
           scaffoldBackgroundColor: bgColor,
-          fontFamily: 'Inter', // Keep Inter as main font
-          textTheme: const TextTheme(
-            displayLarge: TextStyle(
-              fontFamily: 'Poppins',
+          // Remove fontFamily here to use GoogleFonts for all text styles
+          textTheme: TextTheme(
+            displayLarge: GoogleFonts.nunito(
               fontSize: 32,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
-            displayMedium: TextStyle(
-              fontFamily: 'Poppins',
+            displayMedium: GoogleFonts.nunito(
               fontSize: 24,
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
-            bodyLarge: TextStyle(
-              fontFamily: 'Inter',
+            bodyLarge: GoogleFonts.nunito(
               fontSize: 16,
               color: Colors.white,
             ),
-            bodyMedium: TextStyle(
-              fontFamily: 'Inter',
+            bodyMedium: GoogleFonts.nunito(
               fontSize: 14,
               color: Colors.white70,
             ),

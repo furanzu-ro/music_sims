@@ -117,7 +117,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 24,
-                                  fontWeight: FontWeight.normal,
+                                  fontWeight: FontWeight.bold, // Changed to bold
                                   color: Colors.white,
                                 ),
                               ),
@@ -238,12 +238,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
   }) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
+      
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: isPrimary ? accentColor : cardColor,
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20), // Reduced padding for smaller button
           elevation: isPrimary ? 8 : 4,
           shadowColor: isPrimary ? accentColor.withOpacity(0.4) : Colors.black26,
           shape: RoundedRectangleBorder(
@@ -254,21 +255,21 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
             ),
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 24),
-            const SizedBox(width: 12),
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: isPrimary ? Colors.white : accentColor,
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 24),
+                const SizedBox(width: 12),
+                Text(
+                  text,
+                  style: GoogleFonts.nunito(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isPrimary ? Colors.white : accentColor,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
       ),
     );
   }

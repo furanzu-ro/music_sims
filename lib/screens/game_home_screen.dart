@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/game_provider.dart';
 import '../utils/constants.dart';
+import '../widgets/artist_profile_loading.dart';
 
 class GameHomeScreen extends StatefulWidget {
   const GameHomeScreen({super.key});
@@ -12,7 +13,6 @@ class GameHomeScreen extends StatefulWidget {
 
 class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStateMixin {
   late AnimationController _musicNoteController;
-  late Animation<double> _musicNoteAnimation;
 
   @override
   void initState() {
@@ -21,13 +21,6 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat();
-    _musicNoteAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _musicNoteController,
-      curve: Curves.easeInOut,
-    ));
   }
 
   @override
@@ -36,29 +29,6 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
     super.dispose();
   }
 
-  Widget _buildFloatingNote(double startX, double startY, double size, double delay) {
-    return AnimatedBuilder(
-      animation: _musicNoteController,
-      builder: (context, child) {
-        double progress = (_musicNoteAnimation.value + delay) % 1;
-        double y = startY - (progress * 200);
-        double x = startX + (10 * (progress - 0.5));
-        double opacity = 1.0 - progress;
-        return Positioned(
-          left: x,
-          top: y,
-          child: Opacity(
-            opacity: opacity,
-            child: Icon(
-              Icons.music_note,
-              size: size,
-              color: Colors.white.withOpacity(0.7),
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   String _formatDate(DateTime date) {
     const monthNames = [
@@ -249,184 +219,41 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
                 ),
               ],
             ),
+            if (gameProvider.isLoading)
+              Stack(
+                children: [
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withOpacity(0.7),
+                    ),
+                  ),
+                  const Center(
+                    child: ArtistProfileLoading(),
+                  ),
+                ],
+              ),
             // Floating Next Week button
             Positioned(
-              bottom: 24,
+              bottom: 20,
               right: 24,
-              child: Consumer<GameProvider>(
-                builder: (context, gameProvider, child) {
-                  return FloatingActionButton.extended(
-                    onPressed: gameProvider.isLoading
-                        ? null
-                        : () async {
-                            await gameProvider.nextWeek();
-                          },
-                    backgroundColor: accentColor,
-                    label: const Text(
-                      'Next Week',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    icon: const Icon(Icons.calendar_today),
-                  );
-                },
+              child: Material(
+                elevation: 10,
+                shape: const CircleBorder(),
+                child: Consumer<GameProvider>(
+                  builder: (context, gameProvider, child) {
+                    return FloatingActionButton(
+                      onPressed: gameProvider.isLoading
+                          ? null
+                          : () async {
+                                await gameProvider.nextWeek();
+                            },
+                      backgroundColor: accentColor,
+                      child: const Icon(Icons.calendar_today),
+                    );
+                  },
+                ),
               ),
             ),
-            if (gameProvider.isLoading)
-              Container(
-                color: Colors.black.withOpacity(0.7),
-                width: double.infinity,
-                height: double.infinity,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    AnimatedBuilder(
-                      animation: _musicNoteController,
-                      builder: (context, child) {
-                        double progress = (_musicNoteAnimation.value + 0.0) % 1;
-                        double y = 80 - (progress * 200);
-                        double x = 40 + (10 * (progress - 0.5));
-                        double opacity = 1.0 - progress;
-                        return Positioned(
-                          left: x,
-                          top: y,
-                          child: Opacity(
-                            opacity: opacity,
-                            child: Icon(
-                              Icons.music_note,
-                              size: 30,
-                              color: Colors.white.withOpacity(0.7),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    AnimatedBuilder(
-                      animation: _musicNoteAnimation,
-                      builder: (context, child) {
-                        double progress = (_musicNoteAnimation.value + 0.3) % 1;
-                        double y = 90 - (progress * 200);
-                        double x = 80 + (10 * (progress - 0.5));
-                        double opacity = 1.0 - progress;
-                        return Positioned(
-                          left: x,
-                          top: y,
-                          child: Opacity(
-                            opacity: opacity,
-                            child: Icon(
-                              Icons.music_note,
-                              size: 20,
-                              color: Colors.white.withOpacity(0.7),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    AnimatedBuilder(
-                      animation: _musicNoteAnimation,
-                      builder: (context, child) {
-                        double progress = (_musicNoteAnimation.value + 0.6) % 1;
-                        double y = 85 - (progress * 200);
-                        double x = 120 + (10 * (progress - 0.5));
-                        double opacity = 1.0 - progress;
-                        return Positioned(
-                          left: x,
-                          top: y,
-                          child: Opacity(
-                            opacity: opacity,
-                            child: Icon(
-                              Icons.music_note,
-                              size: 25,
-                              color: Colors.white.withOpacity(0.7),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    AnimatedBuilder(
-                      animation: _musicNoteAnimation,
-                      builder: (context, child) {
-                        double progress = (_musicNoteAnimation.value + 0.9) % 1;
-                        double y = 90 - (progress * 200);
-                        double x = 160 + (10 * (progress - 0.5));
-                        double opacity = 1.0 - progress;
-                        return Positioned(
-                          left: x,
-                          top: y,
-                          child: Opacity(
-                            opacity: opacity,
-                            child: Icon(
-                              Icons.music_note,
-                              size: 18,
-                              color: Colors.white.withOpacity(0.7),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    AnimatedBuilder(
-                      animation: _musicNoteAnimation,
-                      builder: (context, child) {
-                        double progress = (_musicNoteAnimation.value + 0.2) % 1;
-                        double y = 80 - (progress * 200);
-                        double x = 200 + (10 * (progress - 0.5));
-                        double opacity = 1.0 - progress;
-                        return Positioned(
-                          left: x,
-                          top: y,
-                          child: Opacity(
-                            opacity: opacity,
-                            child: Icon(
-                              Icons.music_note,
-                              size: 22,
-                              color: Colors.white.withOpacity(0.7),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    const Positioned(
-                      bottom: 80,
-                      child: Text(
-                        'Loading your journey...',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (gameProvider.isLoading)
-                Container(
-                  color: Colors.black.withOpacity(0.7),
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      _buildFloatingNote(40, 80, 30, 0.0),
-                      _buildFloatingNote(80, 90, 20, 0.3),
-                      _buildFloatingNote(120, 85, 25, 0.6),
-                      _buildFloatingNote(160, 90, 18, 0.9),
-                      _buildFloatingNote(200, 80, 22, 0.2),
-                      const Positioned(
-                        bottom: 80,
-                        child: Text(
-                          'Loading your journey...',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
           ],
         );
       },

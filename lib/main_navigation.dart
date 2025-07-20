@@ -110,33 +110,36 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
             bottom: 0,
             left: 0,
             right: 0,
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
-              height: 60,
-              alignment: Alignment.bottomCenter,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(40),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: primaryColor, 
-                      borderRadius: BorderRadius.circular(40),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
-                          blurRadius: 15,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildNavItem(icon: _icons[0], label: _labels[0], index: 0),
-                        _buildNavItem(icon: _icons[1], label: _labels[1], index: 1),
-                      ],
+            child: SafeArea(
+              bottom: true,
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+                height: 60,
+                alignment: Alignment.bottomCenter,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(40),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    child: Container(
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: primaryColor, 
+                        borderRadius: BorderRadius.circular(40),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 15,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildNavItem(icon: _icons[0], label: _labels[0], index: 0),
+                          _buildNavItem(icon: _icons[1], label: _labels[1], index: 1),
+                        ],
+                      ),
                     ),
                   ),
                 ),

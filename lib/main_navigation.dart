@@ -1,6 +1,7 @@
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:music_sims/widgets/game_loading_indicator.dart';
 import 'package:music_sims/providers/game_provider.dart';
 import 'package:music_sims/screens/game_home_screen.dart';
 import 'package:provider/provider.dart';
@@ -18,10 +19,17 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
   int _selectedIndex = 0;
   late AnimationController _controller;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    GameHomeScreen(),
-    ProfileScreen(),
-  ];
+  static List<Widget> _widgetOptions(BuildContext context) {
+    Provider.of<GameProvider>(context, listen: false);
+    return <Widget>[
+      Consumer<GameProvider>(
+        builder: (context, provider, child) => const GameHomeScreen(),
+      ),
+      Consumer<GameProvider>(
+        builder: (context, provider, child) => const ProfileScreen(),
+      ),
+    ];
+  }
 
   static const List<IconData> _icons = [
     Icons.home,
@@ -100,18 +108,14 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 60), // Add bottom padding to avoid content under nav bar
-            child: _widgetOptions.elementAt(_selectedIndex),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              bottom: true,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            _widgetOptions(context).elementAt(_selectedIndex),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
                 height: 60,
@@ -123,7 +127,7 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
                     child: Container(
                       height: 60,
                       decoration: BoxDecoration(
-                        color: primaryColor, 
+                        color: primaryColor,
                         borderRadius: BorderRadius.circular(40),
                         boxShadow: [
                           BoxShadow(
@@ -145,22 +149,22 @@ class _MainNavigationState extends State<MainNavigation> with SingleTickerProvid
                 ),
               ),
             ),
-          ),
-          Consumer<GameProvider>(
-            builder: (context, gameProvider, child) {
-              if (gameProvider.isLoading) {
-                return Container(
-                  color: Colors.black.withOpacity(0.7),
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: const SizedBox.shrink(),
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            },
-          ),
-        ],
+            Consumer<GameProvider>(
+              builder: (context, gameProvider, child) {
+                if (gameProvider.isLoading) {
+                  return Container(
+                    color: Colors.black.withOpacity(0.7),
+                    child: const GameLoadingIndicator(
+                      loadingMessage: 'Advancing to next week...',
+                    ),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

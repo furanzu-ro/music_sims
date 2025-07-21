@@ -15,14 +15,13 @@ class GameProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get lastActionResult => _lastActionResult;
 
-  GameProvider() {
-    _loadGameState();
-  }
+  GameProvider();
 
-  Future<void> _loadGameState() async {
+  Future<bool> loadGameState() async {
     _isLoading = true;
     notifyListeners();
 
+    bool hasSave = false;
     try {
       final prefs = await SharedPreferences.getInstance();
       final gameStateJson = prefs.getString('game_state');
@@ -30,16 +29,21 @@ class GameProvider extends ChangeNotifier {
       if (gameStateJson != null) {
         final gameStateMap = jsonDecode(gameStateJson);
         _gameState = GameState.fromJson(gameStateMap);
+        if (_gameState.isGameStarted) {
+          hasSave = true;
+        }
       }
     } catch (e) {
       print('Error loading game state: $e');
+      _gameState = GameState();
     }
 
     _isLoading = false;
     notifyListeners();
+    return hasSave;
   }
 
-  Future<void> _saveGameState() async {
+  Future<void> saveGameState() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final gameStateJson = jsonEncode(_gameState.toJson());
@@ -76,7 +80,7 @@ class GameProvider extends ChangeNotifier {
       genre: genre,
     );
     notifyListeners();
-    _saveGameState();
+    saveGameState();
 
     // Automatically start the game after profile is set
     if (isProfileComplete && !_gameState.isGameStarted) {
@@ -94,7 +98,7 @@ class GameProvider extends ChangeNotifier {
       isGameStarted: true,
       gameStartTime: chosenDate ?? DateTime.now(),
     );
-    _saveGameState();
+    saveGameState();
     notifyListeners();
   }
 
@@ -121,7 +125,7 @@ class GameProvider extends ChangeNotifier {
       }
 
       _lastActionResult = null; // Remove popup message
-      await _saveGameState();
+      await saveGameState();
     } catch (e) {
       print('Error during next week transition: $e');
       _lastActionResult = null; // Remove popup message on error
@@ -180,7 +184,7 @@ class GameProvider extends ChangeNotifier {
       _advanceDay();
     }
 
-    _saveGameState();
+    saveGameState();
     notifyListeners();
   }
 
@@ -237,10 +241,11 @@ class GameProvider extends ChangeNotifier {
     );
   }
 
-  void resetGame() {
+  Future<void> resetGame() async {
     _gameState = GameState();
     _lastActionResult = null;
-    _saveGameState();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('game_state');
     notifyListeners();
   }
 

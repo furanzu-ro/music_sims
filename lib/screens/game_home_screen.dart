@@ -1,8 +1,8 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/game_provider.dart';
 import '../utils/constants.dart';
-import '../widgets/artist_profile_loading.dart';
 
 class GameHomeScreen extends StatefulWidget {
   const GameHomeScreen({super.key});
@@ -188,12 +188,11 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
                             children: [
                               const SizedBox(height: 12),
                               Container(
-                                height: 70,
-                                width: 70,
+                                height: 80,
+                                width: 80,
                                 margin: const EdgeInsets.symmetric(horizontal: 16),
                                 decoration: BoxDecoration(
-                                  color: Colors.transparent,
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(24),
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.black.withOpacity(0.2),
@@ -202,12 +201,26 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
                                     ),
                                   ],
                                 ),
-                                child: const Center(
-                                  child: Image(
-                                    image: AssetImage('assets/icons/instagram_custom.png'),
-                                    width: 30,
-                                    height: 30,
-                                    fit: BoxFit.contain,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                    child: Container(
+                                      color: Colors.white.withOpacity(0.1),
+                                      child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(context, '/instagram_splash');
+                                  },
+                                  child: const Center(
+                                    child: Image(
+                                      image: AssetImage('assets/icons/instagram_custom.png'),
+                                      width: 40,
+                                      height: 40,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -221,39 +234,24 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
                 ],
               ),
             ),
-            if (gameProvider.isLoading)
-              Stack(
-                children: [
-                  Positioned.fill(
-                    child: Container(
-                      color: Colors.black.withOpacity(0.7),
-                    ),
-                  ),
-                  const Center(
-                    child: ArtistProfileLoading(),
-                  ),
-                ],
-              ),
             // Floating Next Week button
             Positioned(
               bottom: 60,
               right: 24,
-              child: Material(
-                elevation: 10,
-                shape: const CircleBorder(),
-                child: Consumer<GameProvider>(
-                  builder: (context, gameProvider, child) {
-                    return FloatingActionButton(
-                      onPressed: gameProvider.isLoading
-                          ? null
-                          : () async {
-                                await gameProvider.nextWeek();
-                            },
-                      backgroundColor: accentColor,
-                      child: const Icon(Icons.calendar_today),
-                    );
-                  },
-                ),
+              child: Consumer<GameProvider>(
+                builder: (context, gameProvider, child) {
+                  return FloatingActionButton(
+                      shape: const CircleBorder(),
+                    onPressed: gameProvider.isLoading
+                        ? null
+                        : () async {
+                              await gameProvider.nextWeek();
+                          },
+                    backgroundColor: accentColor,
+                    elevation: 10,
+                    child: const Icon(Icons.skip_next),
+                  );
+                },
               ),
             ),
           ],

@@ -107,208 +107,174 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer<GameProvider>(
-        builder: (context, gameProvider, child) {
-
-          if (!gameProvider.isProfileComplete) {
-            // Show profile creation form
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                // Clean solid background color instead of image and gradient
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        bgColor.withOpacity(0.95),
-                        primaryColor.withOpacity(0.95),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                  ),
-                ),
-                SafeArea(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24),
-                    child: Form(
-                      key: _formKey,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  bgColor.withOpacity(0.95),
+                  primaryColor.withOpacity(0.95),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: cardColor.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
                       child: Column(
                         children: [
-                          // Header
-                          Container(
-                            padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                              color: cardColor.withOpacity(0.9),
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 15,
-                                  offset: const Offset(0, 8),
-                                ),
-                              ],
+                          const Icon(
+                            Icons.person_add,
+                            size: 60,
+                            color: accentColor,
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Create Your Artist Profile',
+                            style: TextStyle(
+                              fontFamily: 'PressStart2P',
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
-                            child: Column(
-                              children: [
-                                const Icon(
-                                  Icons.person_add,
-                                  size: 60,
-                                  color: accentColor,
-                                ),
-                                const SizedBox(height: 16),
-                                const Text(
-                                  'Create Your Artist Profile',
-                                  style: TextStyle(
-                                    fontFamily: 'PressStart2P',
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Tell us about your musical journey',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white.withOpacity(0.8),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Tell us about your musical journey',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white.withOpacity(0.8),
                             ),
+                            textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 24),
-
-                          // Form fields
-                          _buildFormField(
-                            label: 'Artist Name',
-                            icon: Icons.music_note,
-                            validator: (value) => value == null || value.isEmpty
-                                ? 'Please enter artist name'
-                                : null,
-                            onSaved: (value) => _artistName = value ?? '',
-                          ),
-                          const SizedBox(height: 12),
-
-                          _buildFormField(
-                            label: 'Real Name',
-                            icon: Icons.person,
-                            validator: (value) => value == null || value.isEmpty
-                                ? 'Please enter real name'
-                                : null,
-                            onSaved: (value) => _realName = value ?? '',
-                          ),
-                          const SizedBox(height: 12),
-
-                          _buildFormField(
-                            label: 'Age',
-                            icon: Icons.cake,
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter age';
-                              }
-                              final age = int.tryParse(value);
-                              if (age == null || age <= 0) {
-                                return 'Please enter a valid age';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) =>
-                                _age = int.tryParse(value ?? '0') ?? 0,
-                          ),
-                          const SizedBox(height: 12),
-
-                          _buildDropdownField(
-                            label: 'Country',
-                            icon: Icons.public,
-                            value: _country,
-                            items: const ['USA', 'UK', 'Brazil', 'France'],
-                            onChanged: (value) =>
-                                setState(() => _country = value ?? 'USA'),
-                          ),
-                          const SizedBox(height: 12),
-
-                          _buildDropdownField(
-                            label: 'Gender',
-                            icon: Icons.person_outline,
-                            value: _gender,
-                            items: const ['Male', 'Female', 'Other'],
-                            onChanged: (value) =>
-                                setState(() => _gender = value ?? 'Male'),
-                          ),
-                          const SizedBox(height: 12),
-
-                          _buildFormField(
-                            label: 'Description',
-                            icon: Icons.description,
-                            maxLines: 3,
-                            onSaved: (value) => _description = value ?? '',
-                          ),
-                          const SizedBox(height: 12),
-
-                          _buildDropdownField(
-                            label: 'Genre',
-                            icon: Icons.library_music,
-                            value: _genre,
-                            items: const [
-                               'Pop',
-                              'Classical',
-                              'Rock',
-                              'Hip-hop',
-                              'Electronic',
-                              'Jazz',
-                              'Blues',
-                              'Country',
-                              'Folk'
-                            ],
-                            onChanged: (value) =>
-                                setState(() => _genre = value ?? 'Pop'),
-                          ),
-                          const SizedBox(height: 12),
-
-                          _buildFormField(
-                            label: 'Year',
-                            icon: Icons.calendar_today,
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter year';
-                              }
-                              final year = int.tryParse(value);
-                              if (year == null ||
-                                  year < 1900 ||
-                                  year > DateTime.now().year) {
-                                return 'Please enter a valid year';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) => _startingYear = int.tryParse(
-                                    value ?? DateTime.now().year.toString()) ??
-                                DateTime.now().year,
-                          ),
-                          const SizedBox(height: 12),
-
-                          _buildImagePickerField(),
-                          const SizedBox(height: 24),
-
-                          // Create Artist Button
-                          _buildCreateArtistButton(gameProvider),
                         ],
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 24),
+                    _buildFormField(
+                      label: 'Artist Name',
+                      icon: Icons.music_note,
+                      validator: (value) =>
+                          value == null || value.isEmpty ? 'Please enter artist name' : null,
+                      onSaved: (value) => _artistName = value ?? '',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildFormField(
+                      label: 'Real Name',
+                      icon: Icons.person,
+                      validator: (value) =>
+                          value == null || value.isEmpty ? 'Please enter real name' : null,
+                      onSaved: (value) => _realName = value ?? '',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildFormField(
+                      label: 'Age',
+                      icon: Icons.cake,
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter age';
+                        }
+                        final age = int.tryParse(value);
+                        if (age == null || age <= 0) {
+                          return 'Please enter a valid age';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) => _age = int.tryParse(value ?? '0') ?? 0,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildDropdownField(
+                      label: 'Country',
+                      icon: Icons.public,
+                      value: _country,
+                      items: const ['USA', 'UK', 'Brazil', 'France'],
+                      onChanged: (value) => setState(() => _country = value ?? 'USA'),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildDropdownField(
+                      label: 'Gender',
+                      icon: Icons.person_outline,
+                      value: _gender,
+                      items: const ['Male', 'Female', 'Other'],
+                      onChanged: (value) => setState(() => _gender = value ?? 'Male'),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildFormField(
+                      label: 'Description',
+                      icon: Icons.description,
+                      maxLines: 3,
+                      onSaved: (value) => _description = value ?? '',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildDropdownField(
+                      label: 'Genre',
+                      icon: Icons.library_music,
+                      value: _genre,
+                      items: const [
+                        'Pop',
+                        'Classical',
+                        'Rock',
+                        'Hip-hop',
+                        'Electronic',
+                        'Jazz',
+                        'Blues',
+                        'Country',
+                        'Folk'
+                      ],
+                      onChanged: (value) => setState(() => _genre = value ?? 'Pop'),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildFormField(
+                      label: 'Year',
+                      icon: Icons.calendar_today,
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter year';
+                        }
+                        final year = int.tryParse(value);
+                        if (year == null || year < 1900 || year > DateTime.now().year) {
+                          return 'Please enter a valid year';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) =>
+                          _startingYear = int.tryParse(value ?? DateTime.now().year.toString()) ??
+                              DateTime.now().year,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildImagePickerField(),
+                    const SizedBox(height: 24),
+                    _buildCreateArtistButton(Provider.of<GameProvider>(context, listen: false)),
+                  ],
                 ),
-              ],
-            );
-          }
-
-          // Removed Game Home Screen UI code as per request
-          // Returning an empty container instead
-          return Container();
-        },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

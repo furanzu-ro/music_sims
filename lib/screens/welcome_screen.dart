@@ -29,17 +29,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
       parent: _musicNoteController,
       curve: Curves.easeInOut,
     ));
-    _checkSavedGame();
   }
 
-  void _checkSavedGame() async {
-    final gameProvider = Provider.of<GameProvider>(context, listen: false);
-    if (gameProvider.gameState.isGameStarted) {
-      // If game is started, navigate to main navigation (game/profile)
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacementNamed(context, '/main_navigation');
-      });
-    }
+  @override
+  void dispose() {
+    _musicNoteController.dispose();
+    super.dispose();
   }
 
   Widget _buildFloatingNote(double startX, double startY, double size, double delay) {
@@ -58,7 +53,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
             child: Icon(
               Icons.music_note,
               size: size,
-              color: Colors.white.withOpacity(0.7),
+              color: accentColor,
+              shadows: [
+                BoxShadow(
+                  color: accentColor.withOpacity(0.8),
+                  blurRadius: 12,
+                  spreadRadius: 4,
+                )
+              ],
             ),
           ),
         );
@@ -69,71 +71,63 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Background image removed for cleaner look
-          // Gradient overlay removed for cleaner look
-          SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Welcome card
-                    Container(
-                      padding: const EdgeInsets.all(32),
-                      decoration: BoxDecoration(
-                        color: cardColor.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: primaryColor.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(50),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [bgColor, primaryColor],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(32),
+                        decoration: BoxDecoration(
+                          color: cardColor.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 15,
+                              offset: const Offset(0, 8),
                             ),
-                            child: const Icon(
-                              Icons.music_note,
-                              size: 60,
-                              color: accentColor,
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: primaryColor.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: const Icon(
+                                Icons.music_note,
+                                size: 60,
+                                color: accentColor,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 24),
-                          Column(
-                            children: [
-                              const Text(
-                                'Welcome to',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold, // Changed to bold
-                                  color: Colors.white,
-                                ),
+                            const SizedBox(height: 24),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Musica Journey',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.getFont(
+                                'Press Start 2P',
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Musica Journey',
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.getFont(
-                                  'Press Start 2P',
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
                           const SizedBox(height: 16),
                           Text(
                             'Make music. Make headlines. Make history',
@@ -187,7 +181,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             if (gameProvider.gameState.isGameStarted) ...[
-                              // Removed "Continue Game" button as requested
+                              _buildModernButton(
+                                context: context,
+                                text: 'Continue Game',
+                                icon: Icons.play_arrow,
+                                isPrimary: true,
+                                onPressed: () {
+                                  Navigator.pushReplacementNamed(context, '/main_navigation');
+                                },
+                              ),
                               const SizedBox(height: 16),
                               _buildModernButton(
                                 context: context,
@@ -195,6 +197,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                                 icon: Icons.refresh,
                                 isPrimary: false,
                                 onPressed: () {
+                                  gameProvider.resetGame();
                                   Navigator.pushNamed(context, '/game');
                                 },
                               ),
@@ -204,14 +207,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                                 text: 'Start Game',
                                 icon: Icons.rocket_launch,
                                 isPrimary: true,
-                                onPressed: () async {
-                                  Navigator.pushNamed(context, '/game').then((_) {
-                                    // After returning from game screen, check if game started and navigate
-                                    final gameProvider = Provider.of<GameProvider>(context, listen: false);
-                                    if (gameProvider.gameState.isGameStarted) {
-                                      Navigator.pushReplacementNamed(context, '/main_navigation');
-                                    }
-                                  });
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/game');
                                 },
                               ),
                             ],
@@ -225,6 +222,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
             ),
           ),
         ],
+        ),
       ),
     );
   }

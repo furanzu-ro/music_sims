@@ -7,6 +7,8 @@ import 'screens/splash_screen.dart' as splash;
 import 'screens/welcome_screen.dart';
 import 'screens/game_screen.dart' as game;
 import 'screens/profile_screen.dart';
+import 'screens/instagram_profile_screen.dart';
+import 'screens/instagram_splash_screen.dart';
 import 'providers/game_provider.dart';
 import 'utils/constants.dart';
 import 'main_navigation.dart' as main_nav;
@@ -17,13 +19,42 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final AppLifecycleListener _listener;
+  late final GameProvider _gameProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _gameProvider = GameProvider();
+    _listener = AppLifecycleListener(
+      onStateChange: _onStateChanged,
+    );
+  }
+
+  @override
+  void dispose() {
+    _listener.dispose();
+    super.dispose();
+  }
+
+  void _onStateChanged(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _gameProvider.saveGameState();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => GameProvider(),
+    return ChangeNotifierProvider.value(
+      value: _gameProvider,
       child: MaterialApp(
         title: 'Musica Journey',
         theme: ThemeData(
@@ -69,6 +100,8 @@ class MyApp extends StatelessWidget {
           '/main_navigation': (context) => const main_nav.MainNavigation(),
           '/game': (context) => const game.GameScreen(),
           '/profile': (context) => const ProfileScreen(),
+          '/instagram': (context) => const InstagramProfileScreen(),
+          '/instagram_splash': (context) => const InstagramSplashScreen(),
         },
       ),
     );

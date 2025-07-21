@@ -303,10 +303,10 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                gameProvider.resetGame();
+              onPressed: () async {
+                await gameProvider.resetGame();
                 Navigator.of(context).pop();
-                Navigator.pushReplacementNamed(context, '/');
+                Navigator.pushNamedAndRemoveUntil(context, '/welcome', (route) => false);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: dangerColor,

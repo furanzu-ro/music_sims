@@ -1,3 +1,5 @@
+import 'instagram_post.dart';
+
 class GameState {
   final int currentDay;
   final int health;
@@ -18,6 +20,9 @@ class GameState {
   final String description;
   final String genre;
 
+  // New posts field
+  final List<InstagramPost> posts;
+
   GameState({
     this.currentDay = 1,
     this.health = 100,
@@ -35,6 +40,7 @@ class GameState {
     this.gender = '',
     this.description = '',
     this.genre = '',
+    this.posts = const [],
   });
 
   GameState copyWith({
@@ -54,6 +60,7 @@ class GameState {
     String? gender,
     String? description,
     String? genre,
+    List<InstagramPost>? posts,
   }) {
     return GameState(
       currentDay: currentDay ?? this.currentDay,
@@ -72,6 +79,7 @@ class GameState {
       gender: gender ?? this.gender,
       description: description ?? this.description,
       genre: genre ?? this.genre,
+      posts: posts ?? List.from(this.posts),
     );
   }
 
@@ -93,6 +101,7 @@ class GameState {
       'gender': gender,
       'description': description,
       'genre': genre,
+      'posts': posts.map((post) => post.toJson()).toList(),
     };
   }
 
@@ -116,6 +125,10 @@ class GameState {
       gender: json['gender'] ?? '',
       description: json['description'] ?? '',
       genre: json['genre'] ?? '',
+      posts: json['posts'] != null
+          ? List<InstagramPost>.from(
+              (json['posts'] as List).map((postJson) => InstagramPost.fromJson(postJson)))
+          : [],
     );
   }
 }

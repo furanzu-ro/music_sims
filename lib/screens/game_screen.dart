@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/game_provider.dart';
 import '../utils/constants.dart';
+import '../widgets/game_loading_indicator.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -11,11 +12,9 @@ class GameScreen extends StatefulWidget {
   State<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
+class _GameScreenState extends State<GameScreen> {
 
   final _formKey = GlobalKey<FormState>();
-  late AnimationController _musicNoteController;
-  late Animation<double> _musicNoteAnimation;
 
   // Form fields
   String _artistName = '';
@@ -27,22 +26,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   String _genre = 'Pop';
   String _country = 'USA';
   int _startingYear = DateTime.now().year;
-
-  @override
-  void initState() {
-    super.initState();
-    _musicNoteController = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    )..repeat();
-    _musicNoteAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _musicNoteController,
-      curve: Curves.easeInOut,
-    ));
-  }
 
   Widget _buildImagePickerField() {
     return Container(
@@ -94,15 +77,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       ),
     );
   }
-
-  @override
-  void dispose() {
-    _musicNoteController.dispose();
-    super.dispose();
-  }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -287,52 +261,14 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
           if (_formKey.currentState?.validate() ?? false) {
             _formKey.currentState?.save();
 
-            // Show cool loading dialog with music note animation
+            // Show loading dialog using GameLoadingIndicator
             showDialog(
               context: context,
               barrierDismissible: false,
-              builder: (context) => Center(
-                child: Card(
-                  color: cardColor,
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        AnimatedBuilder(
-                          animation: _musicNoteAnimation,
-                          builder: (context, child) {
-                            return Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: LinearGradient(
-                                  colors: [
-                                    accentColor.withOpacity(0.3),
-                                    accentColor,
-                                  ],
-                                  stops: [0.0, _musicNoteAnimation.value],
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.music_note,
-                                color: Colors.white,
-                                size: 30,
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Creating your artist profile...',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ),
+              builder: (context) => Container(
+                color: Colors.black.withOpacity(0.7),
+                child: const GameLoadingIndicator(
+                  loadingMessage: 'Creating your artist profile...',
                 ),
               ),
             );

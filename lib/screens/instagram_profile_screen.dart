@@ -1,9 +1,61 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/game_provider.dart';
 
-class InstagramProfileScreen extends StatelessWidget {
+class InstagramProfileScreen extends StatefulWidget {
   const InstagramProfileScreen({super.key});
+
+  @override
+  State<InstagramProfileScreen> createState() => _InstagramProfileScreenState();
+}
+
+class _InstagramProfileScreenState extends State<InstagramProfileScreen> {
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImageAndPost() async {
+    final gameProvider = Provider.of<GameProvider>(context, listen: false);
+
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+
+    final caption = await _showCaptionDialog();
+    if (caption == null) return;
+
+    // For simplicity, use image path as imageUrl (in real app, upload to server)
+    gameProvider.addPost(image.path, caption);
+  }
+
+  Future<String?> _showCaptionDialog() async {
+    String caption = '';
+    return showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Enter Caption'),
+          content: TextField(
+            autofocus: true,
+            decoration: const InputDecoration(hintText: 'Write a caption...'),
+            onChanged: (value) {
+              caption = value;
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(null),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(caption),
+              child: const Text('Post'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +72,11 @@ class InstagramProfileScreen extends StatelessWidget {
               const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _pickImageAndPost,
+        backgroundColor: Colors.blueAccent,
+        child: const Icon(Icons.camera_alt),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -49,13 +106,13 @@ class InstagramProfileScreen extends StatelessWidget {
                         : null,
                   ),
                   const SizedBox(width: 24),
-                  const Expanded(
+                  Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _ProfileStat(count: '1', label: 'posts'),
-                        _ProfileStat(count: '1.2M', label: 'followers'),
-                        _ProfileStat(count: '120', label: 'following'),
+                        _ProfileStat(count: gameState.posts.length.toString(), label: 'posts'),
+                        const _ProfileStat(count: '0', label: 'followers'),
+                        const _ProfileStat(count: '0', label: 'following'),
                       ],
                     ),
                   ),
@@ -87,12 +144,32 @@ class InstagramProfileScreen extends StatelessWidget {
                 crossAxisSpacing: 2,
                 mainAxisSpacing: 2,
               ),
-              itemCount: 1,
+              itemCount: gameState.posts.length,
               itemBuilder: (context, index) {
+                final post = gameState.posts[index];
                 return Container(
-                  color: Colors.grey[900],
-                  child: const Icon(Icons.music_note,
-                      color: Colors.white, size: 50),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[900],
+                    image: DecorationImage(
+                      image: FileImage(
+                        File(post.imageUrl),
+                      ),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      color: Colors.black54,
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      child: Text(
+                        post.caption,
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
                 );
               },
             ),
@@ -102,6 +179,7 @@ class InstagramProfileScreen extends StatelessWidget {
     );
   }
 }
+
 
 class _ProfileStat extends StatelessWidget {
   final String count;

@@ -236,7 +236,7 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
             ),
             // Floating Next Week button
             Positioned(
-              bottom: 60,
+              bottom: 70,
               right: 24,
               child: Consumer<GameProvider>(
                 builder: (context, gameProvider, child) {

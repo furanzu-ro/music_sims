@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:music_sims/models/instagram_post.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/game_state.dart';
 import '../models/game_action.dart';
@@ -255,6 +256,15 @@ class GameProvider extends ChangeNotifier {
 
   void clearLastActionResult() {
     _lastActionResult = null;
+    notifyListeners();
+  }
+
+  // New method to add a post
+  void addPost(String imageUrl, String caption) {
+    final newPost = InstagramPost(imageUrl: imageUrl, caption: caption);
+    final updatedPosts = List<InstagramPost>.from(_gameState.posts)..add(newPost);
+    _gameState = _gameState.copyWith(posts: updatedPosts);
+    saveGameState();
     notifyListeners();
   }
 }

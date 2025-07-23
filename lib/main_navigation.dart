@@ -1,9 +1,9 @@
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:music_sims/widgets/game_loading_indicator.dart';
-import 'package:music_sims/providers/game_provider.dart';
-import 'package:music_sims/screens/game_home_screen.dart';
+import 'package:musica_journey/providers/game_provider.dart';
+import 'package:musica_journey/screens/game_home_screen.dart';
+import 'package:musica_journey/widgets/game_loading_indicator.dart';
 import 'package:provider/provider.dart';
 import 'screens/profile_screen.dart';
 import 'utils/constants.dart';

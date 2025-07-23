@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:music_sims/models/instagram_post.dart';
+import 'package:musica_journey/models/instagram_post.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/game_state.dart';
 import '../models/game_action.dart';

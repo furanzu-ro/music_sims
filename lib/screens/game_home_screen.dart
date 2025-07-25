@@ -11,7 +11,8 @@ class GameHomeScreen extends StatefulWidget {
   State<GameHomeScreen> createState() => _GameHomeScreenState();
 }
 
-class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStateMixin {
+class _GameHomeScreenState extends State<GameHomeScreen>
+    with TickerProviderStateMixin {
   late AnimationController _musicNoteController;
 
   @override
@@ -28,7 +29,6 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
     _musicNoteController.dispose();
     super.dispose();
   }
-
 
   String _formatDate(DateTime date) {
     const monthNames = [
@@ -86,7 +86,8 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
                 children: [
                   // Compact Stats Header
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 16),
                     decoration: const BoxDecoration(
                       color: cardColor,
                       borderRadius: BorderRadius.only(
@@ -103,26 +104,31 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
                               padding: const EdgeInsets.all(2),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(color: accentColor, width: 2),
+                                border:
+                                    Border.all(color: accentColor, width: 2),
                               ),
                               child: CircleAvatar(
                                 radius: 25,
                                 backgroundColor: primaryColor,
-                                backgroundImage: gameState.profilePicture.isNotEmpty
-                                    ? NetworkImage(gameState.profilePicture)
-                                    : null,
+                                backgroundImage:
+                                    gameState.profilePicture.isNotEmpty
+                                        ? NetworkImage(gameState.profilePicture)
+                                        : null,
                                 child: gameState.profilePicture.isEmpty
-                                    ? const Icon(Icons.person, size: 25, color: Colors.white)
+                                    ? const Icon(Icons.person,
+                                        size: 25, color: Colors.white)
                                     : null,
                               ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         gameState.artistName,
@@ -134,7 +140,8 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
                                       ),
                                       Text(
                                         gameState.gameStartTime != null
-                                            ? _formatDate(gameState.gameStartTime!)
+                                            ? _formatDate(
+                                                gameState.gameStartTime!)
                                             : "No Date",
                                         style: TextStyle(
                                           color: Colors.white.withOpacity(0.7),
@@ -145,7 +152,8 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
                                   ),
                                   Row(
                                     children: [
-                                      const Icon(Icons.attach_money, color: Colors.white, size: 18),
+                                      const Icon(Icons.attach_money,
+                                          color: Colors.white, size: 18),
                                       const SizedBox(width: 4),
                                       Text(
                                         gameState.money.toString(),
@@ -167,11 +175,18 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildCompactStat('Health', gameState.health, Icons.favorite,
-                                color: gameState.health > 50 ? accentColor : dangerColor),
-                            _buildCompactStat('Energy', gameState.energy, Icons.battery_charging_full,
-                                color: gameState.energy > 30 ? accentColor : warningColor),
-                            _buildCompactStat('Happiness', gameState.happiness, Icons.mood,
+                            _buildCompactStat(
+                                'Health', gameState.health, Icons.favorite,
+                                color: gameState.health > 50
+                                    ? accentColor
+                                    : dangerColor),
+                            _buildCompactStat('Energy', gameState.energy,
+                                Icons.battery_charging_full,
+                                color: gameState.energy > 30
+                                    ? accentColor
+                                    : warningColor),
+                            _buildCompactStat(
+                                'Happiness', gameState.happiness, Icons.mood,
                                 color: accentColor),
                           ],
                         ),
@@ -190,7 +205,8 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
                               Container(
                                 height: 80,
                                 width: 80,
-                                margin: const EdgeInsets.symmetric(horizontal: 16),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 16),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(24),
                                   boxShadow: [
@@ -204,22 +220,25 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(24),
                                   child: BackdropFilter(
-                                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                    filter:
+                                        ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                                     child: Container(
                                       color: Colors.white.withOpacity(0.1),
                                       child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushNamed(context, '/instagram_splash');
-                                  },
-                                  child: const Center(
-                                    child: Image(
-                                      image: AssetImage('assets/icons/instagram_custom.png'),
-                                      width: 40,
-                                      height: 40,
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                ),
+                                        onTap: () {
+                                          Navigator.pushNamed(
+                                              context, '/instagram_splash');
+                                        },
+                                        child: const Center(
+                                          child: Image(
+                                            image: AssetImage(
+                                                'assets/icons/instagram_custom.png'),
+                                            width: 40,
+                                            height: 40,
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -241,15 +260,19 @@ class _GameHomeScreenState extends State<GameHomeScreen> with TickerProviderStat
               child: Consumer<GameProvider>(
                 builder: (context, gameProvider, child) {
                   return FloatingActionButton(
-                      shape: const CircleBorder(),
+                    shape: const CircleBorder(),
                     onPressed: gameProvider.isLoading
                         ? null
                         : () async {
-                              await gameProvider.nextWeek();
+                            await gameProvider.nextWeek();
                           },
                     backgroundColor: accentColor,
                     elevation: 10,
-                    child: const Icon(Icons.skip_next),
+                    child: const Icon(
+                      Icons.skip_next,
+                      color: Colors.white, 
+                      size: 30.0, 
+                    ),
                   );
                 },
               ),

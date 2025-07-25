@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:musica_journey/utils/constants.dart';
 import 'package:provider/provider.dart';
 import '../models/instagram_post.dart';
 import '../providers/game_provider.dart';
@@ -20,63 +21,284 @@ class _InstagramProfileScreenState extends State<InstagramProfileScreen> {
   Future<void> _pickImageAndPost() async {
     final gameProvider = Provider.of<GameProvider>(context, listen: false);
 
-    final XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedImage =
+        await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage == null) return;
 
+    // Get screen size to calculate appropriate crop window size
+    final screenSize = MediaQuery.of(context).size;
+    final safeAreaInsets = MediaQuery.of(context).padding;
+    
+    // Calculate a safe crop area that avoids phone UI elements
+    final cropHeight = screenSize.height - safeAreaInsets.top - safeAreaInsets.bottom - 200; // Extra padding
+    final cropWidth = screenSize.width - safeAreaInsets.left - safeAreaInsets.right - 40; // Extra padding
+    
+    // Use the smaller dimension to ensure square crop
+    final cropSize = cropHeight < cropWidth ? cropHeight : cropWidth;
+    
     // Crop the image with Instagram aspect ratio (1:1)
     final CroppedFile? croppedImage = await ImageCropper().cropImage(
       sourcePath: pickedImage.path,
       aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+      compressQuality: 90,
+      compressFormat: ImageCompressFormat.jpg,
+      maxWidth: 1080, // Instagram standard
+      maxHeight: 1080, // Instagram standard
       uiSettings: [
         AndroidUiSettings(
           toolbarTitle: 'Crop Image',
           toolbarColor: Colors.black,
           toolbarWidgetColor: Colors.white,
+          statusBarColor: Colors.black,
+          backgroundColor: Colors.black,
+          activeControlsWidgetColor: accentColor,
+          dimmedLayerColor: Colors.black.withOpacity(0.7),
+          hideBottomControls: false,
+          showCropGrid: true,
           initAspectRatio: CropAspectRatioPreset.square,
           lockAspectRatio: true,
+          cropFrameStrokeWidth: 2,
+          cropFrameColor: Colors.white,
+          cropGridRowCount: 3,
+          cropGridColumnCount: 3,
         ),
         IOSUiSettings(
           title: 'Crop Image',
           aspectRatioLockEnabled: true,
+          resetAspectRatioEnabled: false,
+          minimumAspectRatio: 1.0,
         ),
       ],
     );
 
     if (croppedImage == null) return;
 
-    final caption = await _showCaptionDialog();
+    final caption = await _showCaptionDialog(croppedImage.path);
     if (caption == null) return;
 
     // For simplicity, use cropped image path as imageUrl (in real app, upload to server)
     gameProvider.addPost(croppedImage.path, caption);
   }
 
-  Future<String?> _showCaptionDialog() async {
-    String caption = '';
-    return showDialog<String>(
+  Future<String?> _showCaptionDialog(String imagePath) async {
+    final gameProvider = Provider.of<GameProvider>(context, listen: false);
+    final gameState = gameProvider.gameState;
+    final TextEditingController captionController = TextEditingController();
+    
+    return showModalBottomSheet<String>(
       context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.black,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+      ),
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Enter Caption'),
-          content: TextField(
-            autofocus: true,
-            decoration: const InputDecoration(hintText: 'Write a caption...'),
-            onChanged: (value) {
-              caption = value;
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(null),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(caption),
-              child: const Text('Post'),
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.9,
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // App bar
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: const BoxDecoration(
+                      border: Border(bottom: BorderSide(color: Colors.grey, width: 0.2)),
+                      color: Colors.black,
+                    ),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Colors.white),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                        const Expanded(
+                          child: Text(
+                            'New Post',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(captionController.text);
+                          },
+                          child: const Text(
+                            'Share',
+                            style: TextStyle(
+                              color: accentColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  // Content
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Image and caption section
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Image preview
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.file(
+                                    File(imagePath),
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                
+                                // Caption input
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      // User info
+                                      Row(
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 14,
+                                            backgroundImage: gameState.profilePicture.isNotEmpty
+                                                ? NetworkImage(gameState.profilePicture)
+                                                : null,
+                                            child: gameState.profilePicture.isEmpty
+                                                ? const Icon(Icons.person, size: 14)
+                                                : null,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            gameState.artistName,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      
+                                      // Caption text field
+                                      TextField(
+                                        controller: captionController,
+                                        decoration: const InputDecoration(
+                                          hintText: 'Write a caption...',
+                                          border: InputBorder.none,
+                                          isDense: true,
+                                          contentPadding: EdgeInsets.zero,
+                                          hintStyle: TextStyle(color: Colors.grey),
+                                        ),
+                                        style: const TextStyle(fontSize: 14, color: Colors.white),
+                                        maxLines: 5,
+                                        autofocus: true,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          
+                          const Divider(color: Colors.grey, thickness: 0.2),
+                          
+                          // Additional options (non-functional placeholders)
+                          _buildOptionItem(Icons.person_add_outlined, 'Tag People'),
+                          _buildOptionItem(Icons.location_on_outlined, 'Add Location'),
+                          _buildOptionItem(Icons.music_note_outlined, 'Add Music'),
+                          
+                          const Divider(color: Colors.grey, thickness: 0.2),
+                          
+                          // Social sharing options (non-functional placeholders)
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Also share to',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                _buildSocialShareOption('Facebook', true),
+                                _buildSocialShareOption('Twitter', false),
+                                _buildSocialShareOption('Tumblr', false),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         );
       },
+    );
+  }
+  
+  Widget _buildOptionItem(IconData icon, String label) {
+    return InkWell(
+      onTap: () {}, // Non-functional placeholder
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Icon(icon, size: 24, color: Colors.white),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 16, color: Colors.white),
+            ),
+            const Spacer(),
+            const Icon(Icons.chevron_right, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildSocialShareOption(String platform, bool isEnabled) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          Text(
+            platform,
+            style: const TextStyle(fontSize: 16, color: Colors.white),
+          ),
+          const Spacer(),
+          Switch(
+            value: isEnabled,
+            onChanged: (value) {}, // Non-functional placeholder
+            activeColor: accentColor,
+          ),
+        ],
+      ),
     );
   }
 
@@ -106,8 +328,13 @@ class _InstagramProfileScreenState extends State<InstagramProfileScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _pickImageAndPost,
-        backgroundColor: Colors.blueAccent,
-        child: const Icon(Icons.camera_alt),
+        shape: const CircleBorder(),
+        backgroundColor: accentColor,
+        child: const Icon(
+          Icons.add_a_photo,
+          color: Colors.white,
+          size: 30.0,
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -141,7 +368,9 @@ class _InstagramProfileScreenState extends State<InstagramProfileScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _ProfileStat(count: gameState.posts.length.toString(), label: 'posts'),
+                        _ProfileStat(
+                            count: gameState.posts.length.toString(),
+                            label: 'posts'),
                         const _ProfileStat(count: '0', label: 'followers'),
                         const _ProfileStat(count: '0', label: 'following'),
                       ],
@@ -201,7 +430,6 @@ class _InstagramProfileScreenState extends State<InstagramProfileScreen> {
   }
 }
 
-
 class _ProfileStat extends StatelessWidget {
   final String count;
   final String label;
@@ -256,7 +484,8 @@ class _PostDetailScreen extends StatelessWidget {
           children: [
             // User Info Header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               child: Row(
                 children: [
                   CircleAvatar(
@@ -360,3 +589,4 @@ class _PostDetailScreen extends StatelessWidget {
     );
   }
 }
+
